@@ -21,3 +21,4 @@ datasets are ignored for this repository to avoid commiting large files; but you
  - [Sci-Hub](http://sci-hub.hk)
  - [Dweet](https://dweet.io/see)
  - [Engage](http://www.engagedata.eu/dataset-search/?q=)
+ - [Intel Lab Data](http://db.csail.mit.edu/labdata/labdata.html)
