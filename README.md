@@ -14,3 +14,10 @@ use a virtual environment with *Python 3.6* and install the modules from [requir
 datasets are ignored for this repository to avoid commiting large files; but you can find them with the following links:
 
  - [CQA_Premium](http://devyss.byethost31.com/dl/CQA_Premium.zip)
+
+## data prospection
+
+ - [40 Brilliant Open Data Projects Preparing Smart Cities for 2018](https://carto.com/blog/forty-brilliant-open-data-projects-preparing-smart-cities-2018/)
+ - [Sci-Hub](http://sci-hub.hk)
+ - [Dweet](https://dweet.io/see)
+ - [Engage](http://www.engagedata.eu/dataset-search/?q=)
