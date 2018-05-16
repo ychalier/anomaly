@@ -102,3 +102,4 @@ ENV/
 
 # Data files
 CQA_Premium.*
+*.csv

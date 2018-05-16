@@ -6,6 +6,7 @@ import pandas as pd
 import time
 import random as rd
 
+import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import numpy as np
@@ -69,13 +70,15 @@ class Detector:
         tmp = self.df.sample(frac=1, random_state=seed).reset_index()
 
         # converting 'class' column from str to int
-        tmp['class'] = tmp['class'].map(lambda x: self.classes.index(x))
+        tmp['class'] = tmp['class'].map(lambda x: self.classes.index(str(x)))
 
         # slicing and extracting relevant datasets
         rows = tmp.shape[0] // 2
-        self.xtrain = tmp.drop('odd', axis=1).loc[:rows, :]
+        self.xtrain = tmp.drop(['odd', 'duplicate', 'index'], axis=1)\
+                         .loc[:rows, :]
         self.ytrain = tmp['odd'].loc[:rows]
-        self.xtest = tmp.drop('odd', axis=1).loc[rows:, :]
+        self.xtest = tmp.drop(['odd', 'duplicate', 'index'], axis=1)\
+                        .loc[rows:, :]
         self.ytest = tmp['odd'].loc[rows:]
 
     def append_odd_points(self, points):
@@ -131,31 +134,31 @@ class Detector:
             plt.xlim(rng.minx, rng.maxx)
             plt.ylim(rng.miny, rng.maxy)
 
-        plt.legend(loc='best')
+        plt.legend(loc=2)
         plt.show()
 
-    def plot_decision_boundaries(self, clf, step=100, rng=None):
-        # TODO: Retest with relevant data
+    def plot_decision_boundaries(self, clf, title="", step=100, rng=None):
+        plt.style.use('seaborn')
         x_min, x_max = min(self.df['width']), max(self.df['width'])
         y_min, y_max = min(self.df['length']), max(self.df['length'])
         xx, yy = np.meshgrid(np.arange(x_min, x_max, (x_min + x_max) / step),\
                              np.arange(y_min, y_max, (y_min + y_max) / step))
         clf.fit(self.xtrain, self.ytrain)
 
+        plt.figure(figsize=(12, 12))
+        plt.title(title)
         colors = cm.rainbow(np.linspace(0, 1, len(self.classes)))
+        handles = []
         for class_, color in zip(self.classes, colors):
-            print("yo")
-            tmp = pd.DataFrame(np.c_[xx.ravel(), yy.ravel()],
-                               columns=['width', 'length'])
-            tmp.is_copy = False
-            tmp['class'] = self.classes.index(class_)
-            tmp['duplicate'] = False
-            z = clf.predict(tmp.reset_index())
+            classes = [self.classes.index(class_)\
+                        for _ in range(len(xx.ravel()))]
+            tmp = pd.DataFrame(np.c_[classes, yy.ravel(), xx.ravel()],
+                       columns=['class', 'length', 'width'])
+            z = clf.predict(tmp)
             z = z.reshape(xx.shape)
-            contour = plt.contour(xx, yy, z, colors=[color])
-
-            plt.clabel(contour, inline=1, colors='black')
-
+            handles.append(mpatches.Patch(color=color, label=class_))
+            plt.contour(xx, yy, z, colors=[color])
+        plt.legend(handles=handles, loc=2)
         plt.show()
 
 
