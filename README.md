@@ -23,3 +23,4 @@ use a virtual environment with *Python 3.6* and install the modules from [requir
 
   - [body.csv](http://devyss.byethost31.com/dl/body.csv) ([source](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=0ahUKEwiRhObqy4fbAhXKWhQKHYACC48QFggrMAA&url=http%3A%2F%2Feric.univ-lyon2.fr%2F~ricco%2Ftanagra%2Ffichiers%2Fbody.xls&usg=AOvVaw1j0Zq5sAnaMPNaAXCcDjws))
   - [moto.csv](http://devyss.byethost31.com/dl/moto.csv) (sample from [Teoalida](http://www.teoalida.com/cardatabase/motorcycles/))
+  - [moto2.csv](http://devyss.byethost31.com/dl/moto2.csv)
