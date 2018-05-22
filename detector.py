@@ -158,6 +158,29 @@ class Detector:
             z = z.reshape(xx.shape)
             handles.append(mpatches.Patch(color=color, label=class_))
             plt.contour(xx, yy, z, colors=[color])
+
+            # plotting unique points in triangles
+            tmp = self.df.loc[(self.df['class'] == class_) &\
+                              (self.df['duplicate'] == False) &\
+                              (self.df['odd'] == False)]
+            plt.plot(tmp['width'], tmp['length'], '^',
+                     label=class_ + " unique", alpha=.5, c=color)
+
+            # plotting duplicate points in circles
+            tmp = self.df.loc[(self.df['class'] == class_) &\
+                              (self.df['duplicate'] == True) &\
+                              (self.df['odd'] == False)]
+            plt.plot(tmp['width'], tmp['length'], 'o',
+                     label=class_ + " duplicate", alpha=.5, c=color)
+
+            # plotting odd points in squares
+            tmp = self.df.loc[(self.df['class'] == class_) &\
+                              (self.df['odd'] == True)]
+            plt.plot(tmp['width'], tmp['length'], 's',
+                     label=class_ + " odd", alpha=.5, c=color)
+        
+        plt.xlabel("width (mm)")
+        plt.ylabel("length (mm)")
         plt.legend(handles=handles, loc=2)
         plt.show()
 
@@ -169,9 +192,11 @@ def confusion_ratios(confusion_matrix, verbose=False):
     fpr = fp / (fp + tn)  # false positives rate
     tnr = tn / (tn + fp)  # true negative rate
     fnr = fn / (fn + tp)  # false negative rate
+    ppv = tp / (tp + fp)  # positive predictive value
+    f1 = (2 * ppv * tpr) / (ppv + tpr)  # f1 score
     if verbose:
-        print('TPR\tFPR\tTNR\tFNR')
-        for x in [tpr, fpr, tnr, fnr]:
+        print('TPR\tFPR\tTNR\tFNR\tPPV\tF1')
+        for x in [tpr, fpr, tnr, fnr, ppv, f1]:
             print('{0}\t'.format(round(x, 4)), end='')
         print()
-    return tpr, fpr, tnr, fnr
+    return tpr, fpr, tnr, fnr, ppv, f1
