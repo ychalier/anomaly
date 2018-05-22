@@ -70,7 +70,6 @@ for k in range(n):
                 rd.randint(minx, maxx)])
 detector.append_odd_points(tmp)
 detector.format()
-detector.plot()
 
 from sklearn import svm
 from sklearn import ensemble
@@ -96,7 +95,8 @@ titles = (
 
 results = {}
 for clf, title in zip(classifiers, titles):
-    results[title] = confusion_ratios(detector.classify(clf)[0])
+    print(title)
+    results[title] = confusion_ratios(detector.classify(clf)[0], True)
 
 for _ in range(len(titles[0])):
     print(' ', end='')
