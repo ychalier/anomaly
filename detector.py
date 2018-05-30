@@ -12,6 +12,8 @@ import matplotlib.cm as cm
 import numpy as np
 
 from sklearn import metrics
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import GridSearchCV
 
 
 def elapsed(tStart):
@@ -99,6 +101,27 @@ class Detector:
             print('computation time: {0}s'.format(elapsed(tStart)))
         return matrix, time.time() - tStart, clf
 
+    def tune_parameters(self, base_clf, parameters, verbose=0, n_jobs=10, cv=5):
+        """
+            Use an exhaustive grid search with cross validation to find the best
+            set of parameters for a given classifier.
+        """
+
+        # scaling  training set
+        scaler = StandardScaler()
+        scaler.fit(self.xtrain)
+        xtrain = scaler.transform(self.xtrain)
+        ytrain = self.ytrain * 1  # convert bool to 0 or 1
+
+        gs = GridSearchCV(base_clf, parameters, verbose=verbose,\
+                          n_jobs=n_jobs, cv=cv)
+        gs.fit(xtrain, ytrain)
+
+        print("best score:", gs.best_score_)
+        print("obtained with parameters:", gs.best_params_)
+
+        return gs.best_estimator_, gs.best_params_
+
     def plot(self, rng=None):
         plt.style.use('seaborn')
         plt.figure(figsize=(12, 12))
@@ -178,7 +201,7 @@ class Detector:
                               (self.df['odd'] == True)]
             plt.plot(tmp['width'], tmp['length'], 's',
                      label=class_ + " odd", alpha=.5, c=color)
-        
+
         plt.xlabel("width (mm)")
         plt.ylabel("length (mm)")
         plt.legend(handles=handles, loc=2)
