@@ -51,6 +51,6 @@ For each classifier, we will report here the list of its parameters, the range o
 | --- | --- | --- | --- |
 | `hidden_layer_sizes`   |  The ith element represents the number of neurons in the ith hidden layer. |   |   |
 | `activation`   | Activation function for the hidden layer.  | `['identity', 'logistic', 'tanh', 'relu']` |   |
-| `solver`   | The solver for weight optimization. | `['lbfgs', 'sgd', 'adams']` |   |
+| `solver`   | The solver for weight optimization. | `['lbfgs', 'sgd', 'adam']` |   |
 | `alpha`   | L2 penalty (regularization term) parameter.  |   |   |
 | `learning_rate`   |  Learning rate schedule for weight updates.  |  `['constant', 'invscaling', 'adaptive']`  |   |

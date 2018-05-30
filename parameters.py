@@ -32,7 +32,7 @@ if __name__ == "__main__":
             'hidden_layer_sizes': [[3] * k for k in range(5)],
             'alpha': 10.0 ** - np.arange(4, 7),
             'activation': ['identity', 'logistic', 'tanh', 'relu'],
-            'solver': ['lbfgs', 'sgd', 'adams']
+            'solver': ['lbfgs', 'sgd', 'adam']
         }),
         ('AdaBoost', ensemble.AdaBoostClassifier(), {
             'base_estimator': [tree.DecisionTreeClassifier(max_depth=k)\
