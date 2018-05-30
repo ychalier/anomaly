@@ -31,7 +31,7 @@ To perform tests that require higher computing performance, use [exec.py](exec.p
 
 ## parameters tuning
 
-In order to find the best parameters for each classifier, we use a grid search with cross validation to find the best set of parameters. The class `Detector` now has a method called `tune_parameters` which seeks the best set of selected parameters for a given classifier. This method is used in a small [Python script]() that can be run on more powerful servers.
+In order to find the best parameters for each classifier, we use a grid search with cross validation to find the best set of parameters. The class `Detector` now has a method called `tune_parameters` which seeks the best set of selected parameters for a given classifier. This method is used in a small [Python script](parameters.py) that can be run on more powerful servers.
 
 ### search and results
 
@@ -50,7 +50,7 @@ For each classifier, we will report here the list of its parameters, the range o
 | parameter | description | range | *best* value |
 | --- | --- | --- | --- |
 | `hidden_layer_sizes`   |  The ith element represents the number of neurons in the ith hidden layer. |   |   |
-| `activation`   | Activation function for the hidden layer.  | `['identity', 'logistic', 'tanh', 'relu'` |   |
+| `activation`   | Activation function for the hidden layer.  | `['identity', 'logistic', 'tanh', 'relu']` |   |
 | `solver`   | The solver for weight optimization. | `['lbfgs', 'sgd', 'adams']` |   |
 | `alpha`   | L2 penalty (regularization term) parameter.  |   |   |
 | `learning_rate`   |  Learning rate schedule for weight updates.  |  `['constant', 'invscaling', 'adaptive']`  |   |
