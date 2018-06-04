@@ -29,7 +29,7 @@ if __name__ == "__main__":
     tests = [
         ('MLP', neural_network.MLPClassifier(max_iter=500), {
             'learning_rate': ['constant', 'invscaling', 'adaptive'],
-            'hidden_layer_sizes': [[3] * k for k in range(5)],
+            'hidden_layer_sizes': [[p] * k for k in range(5) for p in range(1, 50)],
             'alpha': 10.0 ** - np.arange(4, 7),
             'activation': ['identity', 'logistic', 'tanh', 'relu'],
             'solver': ['lbfgs', 'sgd', 'adam']
