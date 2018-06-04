@@ -21,9 +21,9 @@ use a virtual environment with *Python 3.6* and install the modules from [requir
 
  You only need two files, [detector.py](detector.py) contains the `Detector` that is used to store and compute datasets. A example of its usage is shown in [main.ipynb](main.ipynb).
 
-  - [body.csv](http://devyss.byethost31.com/dl/body.csv) (source: [Grete Heinz, Louis J. Peterson, Roger W. Johnson, and Carter J. Kerk. Exploring relationships in body dimensions. Journal of Statistics Education, Volume 11, Number 2](http://ww2.amstat.org/publications/jse/v11n2/datasets.heinz.html))
-  - [moto.csv](http://devyss.byethost31.com/dl/moto.csv) (sample from the [Motorcycle database](http://www.teoalida.com/cardatabase/motorcycles/) from [Teoalida](http://www.teoalida.com), which is a gathering of data scrapped of [bikez.com](www.bikez.com))
-  - [moto2.csv](http://devyss.byethost31.com/dl/moto2.csv)
+  - [body.csv](http://perso.telecom-paristech.fr/ychalier/anomaly/data/body.csv) (source: [Grete Heinz, Louis J. Peterson, Roger W. Johnson, and Carter J. Kerk. Exploring relationships in body dimensions. Journal of Statistics Education, Volume 11, Number 2](http://ww2.amstat.org/publications/jse/v11n2/datasets.heinz.html))
+  - [moto.csv](http://perso.telecom-paristech.fr/ychalier/anomaly/data/moto.csv) (sample from the [Motorcycle database](http://www.teoalida.com/cardatabase/motorcycles/) from [Teoalida](http://www.teoalida.com), which is a gathering of data scrapped of [bikez.com](www.bikez.com))
+  - [moto2.csv](http://perso.telecom-paristech.fr/ychalier/anomaly/data/moto2.csv)
 
 One may use `scp` to copy databases over a distant server to execute code.
 
