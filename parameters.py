@@ -14,17 +14,47 @@ from sklearn import neural_network
 from detector import *
 from loader import load_detector
 
+import os
+
+
+def scorer(estimator, X, y):
+    t_start = time.time()
+    ypred = estimator.predict(X)
+    params = estimator.get_params(deep=True)
+    params['estimator'] = type(estimator).__name__
+    matrix = metrics.confusion_matrix(y, ypred)
+    tpr, fpr, tnr, fnr, ppv, f1 = confusion_ratios(matrix)
+    scores = {
+        'tpr': tpr,
+        'fpr': fpr,
+        'tnr': tnr,
+        'fnr': fnr,
+        'ppv': ppv,
+        'f1': f1,
+        't': time.time() - t_start
+    }
+    write(scores, params)
+    return f1
+
+
+def write(scores, params):
+    global filename
+
+    if not os.path.isfile('{0}.out'.format(filename)):
+        open('{0}.out'.format(filename), 'w').close()
+
+    file = open('{0}.out'.format(filename), 'a')
+    file.write("{0}\t{1}\n".format(params, scores))
+    file.close()
+
+
+timestamp = time.strftime("%Y-%m-%d-%H-%M-%S")
+filename = "params-{0}".format(timestamp)
+
 
 if __name__ == "__main__":
 
     detector = load_detector()
-
-    # initialize output file
-    timestamp = time.strftime("%Y-%m-%d-%H-%M-%S")
-    filename = "parameters-search-{0}.out".format(timestamp)
-    file = open(filename, 'w')
-    file.write("Parameters search from {0}\n\n".format(timestamp))
-    file.close()
 
     tests = [
         ('MLP', neural_network.MLPClassifier(max_iter=500), {
@@ -42,12 +72,9 @@ if __name__ == "__main__":
         })
     ]
 
-    for title, base_clf, parameters in tests:
+    for title, base_clf, parameters in test:
         print(title)
         best_clf, best_params = detector.tune_parameters(base_clf, parameters,\
                                                          verbose=10,\
-                                                         n_jobs=mp.cpu_count())
-        file = open(filename, 'a')
-        file.write("{0}\n{1}\n\n".format(title, str(best_params)\
-                        .replace('\n           ', '')))
-        file.close()
+                                                         n_jobs=mp.cpu_count(),\
+                                                         scoring=scorer)

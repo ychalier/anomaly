@@ -101,7 +101,8 @@ class Detector:
             print('computation time: {0}s'.format(elapsed(tStart)))
         return matrix, time.time() - tStart, clf
 
-    def tune_parameters(self, base_clf, parameters, verbose=0, n_jobs=10, cv=5):
+    def tune_parameters(self, base_clf, parameters, verbose=0,\
+                        n_jobs=10, cv=5, scoring=None):
         """
             Use an exhaustive grid search with cross validation to find the best
             set of parameters for a given classifier.
@@ -114,7 +115,7 @@ class Detector:
         ytrain = self.ytrain * 1  # convert bool to 0 or 1
 
         gs = GridSearchCV(base_clf, parameters, verbose=verbose,\
-                          n_jobs=n_jobs, cv=cv)
+                          n_jobs=n_jobs, cv=cv, scoring=scoring)
         gs.fit(xtrain, ytrain)
 
         print("best score:", gs.best_score_)
