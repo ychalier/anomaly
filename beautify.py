@@ -23,7 +23,7 @@ for line in file.readlines():
             params = ast.literal_eval(tmp[0])
             scores = ast.literal_eval(tmp[1].replace('nan', '"nan"'))
             data['params'].append(params)
-            data['scores'].append(params)
+            data['scores'].append(scores)
 file.close()
 
 # print(json.dumps(data, indent=4, separators=(',', ': ')))
@@ -31,3 +31,29 @@ file.close()
 # save data to a valid json file
 with open("{0}.json".format(filename[:-4]), 'w') as outfile:
     json.dump(data, outfile)
+
+estimators = {}
+for i, params_set in  enumerate(data["params"]):
+    if params_set["estimator"] not in estimators.keys():
+        estimators[params_set["estimator"]] = []
+    estimators[params_set["estimator"]].append(i)
+
+def write_to_csv(filename, keys, data, test):
+    csv_file = open(filename, 'w', newline='')
+    csv_writer = csv.writer(csv_file, delimiter=';')
+    csv_writer.writerow(['id'] + keys)
+    for i, row in enumerate(data):
+        if test(i):
+            csv_writer.writerow([i] + [row[key] for key in keys])
+    csv_file.close()
+
+write_to_csv('{0}.scores.csv'.format(filename[:-4]),\
+             list(data['scores'][0].keys()),\
+             data['scores'],\
+             lambda x: True)
+
+for estimator in estimators.keys():
+    write_to_csv('{0}.params.{1}.csv'.format(filename[:-4], estimator),\
+        list(data['params'][estimators[estimator][0]].keys()),\
+        data['params'],\
+        lambda x: x in estimators[estimator])
