@@ -39,3 +39,5 @@ CSV files are formatted such that a single test batch is split in several files:
 
  - **.scores.csv**: the detailed scores for each test (including the *confusion matrix*), along with the unique parameters *combination id*.
  - **.params.estimatorName.csv**: for each type of classifier, the value of each parameter for every combination using this classifier, along with the *combination id* used as a foreign key with the scores table.
+
+*Side note: the delimiter for those CSV file is currently `;`.*
