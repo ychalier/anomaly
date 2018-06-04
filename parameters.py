@@ -15,6 +15,7 @@ from detector import *
 from loader import load_detector
 
 import os
+import glob
 
 
 def scorer(estimator, X, y):
@@ -39,11 +40,14 @@ def scorer(estimator, X, y):
 
 def write(scores, params):
     global filename
+    pid = os.getpid()
 
-    if not os.path.isfile('{0}.out'.format(filename)):
-        open('{0}.out'.format(filename), 'w').close()
+    custom_filename = '{0}.{1}.out.tmp'.format(filename, pid)
 
-    file = open('{0}.out'.format(filename), 'a')
+    if not os.path.isfile(custom_filename):
+        open(custom_filename, 'w').close()
+
+    file = open(custom_filename, 'a')
     file.write("{0}\t{1}\n".format(params, scores))
     file.close()
 
@@ -72,9 +76,23 @@ if __name__ == "__main__":
         })
     ]
 
-    for title, base_clf, parameters in test:
+    tests_min = [
+        ('AdaBoost', ensemble.AdaBoostClassifier(), {
+            'n_estimators': [i for i in range(1, 10, 1)],
+            'learning_rate': [x * .1 for x in range(1, 2)]
+        })
+    ]
+
+    for title, base_clf, parameters in tests:
         print(title)
         best_clf, best_params = detector.tune_parameters(base_clf, parameters,\
                                                          verbose=10,\
                                                          n_jobs=mp.cpu_count(),\
                                                          scoring=scorer)
+    out_file = open("{0}.out".format(filename), 'w')
+    for tmp_out_file in glob.glob('*.tmp'):
+        file = open(tmp_out_file, 'r')
+        out_file.write(file.read())
+        file.close()
+        os.remove(tmp_out_file)
+    out_file.close()
