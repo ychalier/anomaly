@@ -3,8 +3,13 @@ def warn(*args, **kwargs):
 import warnings
 warnings.warn = warn
 
+import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+
+# if it does not work, be sure to use command:
+#     export MPLBACKEND="agg"
+matplotlib.use('Agg')
 
 import pandas as pd
 import time
@@ -21,8 +26,8 @@ def layer_size(line):
     return int(line[1:-1].split(',')[0])
 
 t_start = time.time()
-scores = pd.read_csv(sys.argv[1], error_bad_lines=False, nrows=1000, sep=";")
-params = pd.read_csv(sys.argv[2], error_bad_lines=False, nrows=1000, sep=";")
+scores = pd.read_csv(sys.argv[1], error_bad_lines=False, sep=";")
+params = pd.read_csv(sys.argv[2], error_bad_lines=False, sep=";")
 params['hidden_layer_count'] = params['hidden_layer_sizes'].map(count_layers)
 params['hidden_layer_size'] = params['hidden_layer_sizes'].map(layer_size)
 print("Data loaded ({0}s)".format(time.time() - t_start))
