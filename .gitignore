@@ -105,3 +105,13 @@ CQA_Premium.*
 *.csv
 *.out
 *.json
+
+# LaTeX aux files
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.synctex.gz
+*.toc
+*.vrb
