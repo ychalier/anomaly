@@ -11,10 +11,21 @@ def load(filename):
         'params': [],
         'scores': []
     }
-    for line in file.readlines():
+    text = file.read().replace('\n           ', '')
+    for line in text.split('\n'):
         if len(line) > 0:
             tmp = line.replace('\n', '').split('\t')
             if len(tmp) == 2:
+                # print('\n', tmp[0])
+                if 'DecisionTreeClassifier' in tmp[0]:
+                    start_index = tmp[0].index('max_depth=') + 10
+                    buffer = ""
+                    while tmp[0][start_index] != ',':
+                        buffer += tmp[0][start_index]
+                        start_index += 1
+                    tmp[0] = tmp[0][:tmp[0].index('DecisionTreeClassifier')]\
+                                + buffer\
+                                + tmp[0][tmp[0].index(')') + 1:]
                 params = ast.literal_eval(tmp[0])
                 scores = ast.literal_eval(tmp[1].replace('nan', '"nan"'))
                 data['params'].append(params)
