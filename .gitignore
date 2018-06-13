@@ -115,3 +115,6 @@ CQA_Premium.*
 *.synctex.gz
 *.toc
 *.vrb
+
+# output classifier
+*.clf

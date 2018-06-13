@@ -44,6 +44,7 @@ class Detector:
         nRows, nCols = self.df.shape
         assert(nCols == 5)
         print('loaded {0} rows ({1} s)'.format(nRows, elapsed(tStart)))
+        self.best_clf = None
 
     def clean(self):
         """
@@ -207,6 +208,11 @@ class Detector:
         plt.ylabel("length (mm)")
         plt.legend(handles=handles, loc=2)
         plt.show()
+
+    def predict(self, class_, length, width):
+        x_predict = pd.DataFrame([[self.classes.index(class_), length, width]],\
+                    columns=['class', 'length', 'width'])
+        return self.best_clf.predict(x_predict)[0]
 
 
 def confusion_ratios(confusion_matrix, verbose=False):

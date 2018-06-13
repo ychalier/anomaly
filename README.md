@@ -41,3 +41,17 @@ CSV files are formatted such that a single test batch is split in several files:
  - **.params.estimatorName.csv**: for each type of classifier, the value of each parameter for every combination using this classifier, along with the *combination id* used as a foreign key with the scores table.
 
 *Side note: the delimiter for those CSV file is currently `;`.*
+
+## usage in production
+
+The following [notebook](production.ipynb) shows how to generate the prediction function. Then, the following script only need this file to classify whether the given record is an anomaly or not:
+
+    def classify(class_, length, width):
+      import pickle
+      file = open('anomaly_classifier.clf', 'rb')
+      fun = pickle.load(file)
+      file.close()
+      if fun(class_, length, width):
+          return "malicious"
+      else:
+          return "non-malicous"
