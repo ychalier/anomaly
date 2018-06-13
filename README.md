@@ -42,6 +42,10 @@ CSV files are formatted such that a single test batch is split in several files:
 
 *Side note: the delimiter for those CSV file is currently `;`.*
 
+The script [process_output.py](process_output.py) processes thoses CSV files to produce relevant plots. Here is an example:
+
+![Parameters tuning for MLP](mlp_activation.png)
+
 ## usage in production
 
 The following [notebook](production.ipynb) shows how to generate the prediction function. Then, the following script only need this file to classify whether the given record is an anomaly or not:
