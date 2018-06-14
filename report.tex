@@ -73,7 +73,7 @@ gris & malicieux & 5,25 à 6,5 mètres & 1,4 à 1,65 mètres \\
 
 %TODO Parler des records de taille
 
-Hors de la zone verte, et dans les deux cadres gris, nous avons alors généré aléatoirement 700 points définis comme malicieux. La figure \ref{regions_decision_manuelles_plot} représente l'affichage de tous les points décrits plus tôt ainsi que des régions de décision. Ainsi faite, notre classification possède, sur le jeu d'entraînement, une précision de 97,57\%.
+Hors de la zone verte, et dans les deux cadres gris, nous avons alors généré aléatoirement 700 points définis comme malicieux. La Figure \ref{regions_decision_manuelles_plot} représente l'affichage de tous les points décrits plus tôt ainsi que des régions de décision. Ainsi faite, notre classification possède, sur le jeu d'entraînement, une précision de 97,57\%.
 
 \begin{figure}
 \centering
@@ -100,7 +100,7 @@ Afin d'éviter d'éventuels problème de version, nous avons opté pour l'utilis
 
 \subsection{Chargement des bases de données}
 
-Afin de centraliser le chargement des bases de données explicitées plus tôt entre tous les scripts en ayant besoin, nous avons implémenté une fonction de chargement nommée \texttt{load\_detector} dans loader.py. Cette fonction instancie un object de la classe `Detector`, que nous décrirons dans la partie suivante. Elle procède de la façon suivante :
+Afin de centraliser le chargement des bases de données explicitées plus tôt entre tous les scripts en ayant besoin, nous avons implémenté une fonction de chargement nommée \texttt{load\_detector} dans loader.py. Cette fonction instancie un object de la classe Detector, que nous décrirons dans la partie suivante. Elle procède de la façon suivante :
 
 \begin{enumerate}
 \item Pour chaque jeu de données au format CSV
@@ -161,7 +161,7 @@ Interface \par \texttt{sklearn} & \multirow{2}{*}{\texttt{tune\_parameters}} & T
 
 \section{Méthode d'évaluation}
 
-\chapter{Affinage des scores et résultats}
+\chapter{Paramétrage et résultats}
 
 \section{Recherche des paramètres optimaux}
 
@@ -193,9 +193,25 @@ Enfin, du grand fichier généré contenant l'historique de tous les tests pass�
 \end{itemize}
 Ces tables sont, à la manière des tables en SQL, liées par une clé primaire externe qui est l'identifiant (unique) de la combinaison de paramètres.
 
-\subsection{Multi-layered Perceptron}
+%TODO : perspective : bloquer les paramètres reconnus comme meilleurs et faire varier ceux qui semblent useless, peut-être qu'une tendance va émerger
 
-\ref{mlp_activation} \ref{mlp_solver}
+\subsection{Multi-layered perceptron}
+
+À l'aide d'un autre petit script Python, nous avons pu afficher les données récoltées dans les CSV mentionnés plus tôt. Les Figures \ref{mlp_activation} et \ref{mlp_solver} sont le résultat du long test pour les paramètres du MLP. La Table \ref{params_mlp} regroupe les différents paramètres testés.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ll}
+paramètre & ensemble des valeurs testées \\
+\hline
+\texttt{learning\_rate} & \texttt{'constant'}, \texttt{'invscaling'} et \texttt{'adaptive'}\\
+\texttt{alpha} & $\{10^{-k} \>\> | \>\> k \in [\![4, 7]\!] \}$ \\
+\texttt{activation} & \texttt{'identity'}, \texttt{'logistic'}, \texttt{'tanh'} et \texttt{'relu'} \\
+\texttt{solver} & \texttt{'lbfgs'}, \texttt{'sgd'} et \texttt{'adam'}\\
+\texttt{hidden\_layer\_sizes} & 0 à 5 \emph{layers}, de taille variant de 1 à 49\\
+\end{tabular}
+\caption{Liste des paramètres testés pour le multi-layered perceptron\label{params_mlp}}
+\end{table}
 
 \begin{figure}
 \centering
@@ -209,9 +225,34 @@ Ces tables sont, à la manière des tables en SQL, liées par une clé primaire 
 \caption{Évolution du score pour MLP selon l'algorithme de descente du gradient\label{mlp_solver}}
 \end{figure}
 
+L'exploitation des résultats est rendue très difficile par le manque de consistance des scores. Cependant, nous avons pu remarqués que des paramètres comme la régularisation (\texttt{alpha}) ou la taille et nombre de \emph{layers} n'avaient que peu d'influence sur les résultats. Par contre, deux éléments semblent ce dégager :
+\begin{itemize}
+\item la tangente hyperbolique comme fonction d'activation
+\item \emph{lbfgs} comme méthode du gradient (la documentation de sklearn prédit cette préférence lorsqu'il y a peu de données à exploiter)
+\end{itemize}
+
+%TODO : insister plus sur les problèmes de variance / inconsistence
+%TODO : vérifier pour learning_rate / alpha
+
 \subsection{AdaBoost}
 
-\ref{adaboost_depth}
+Comme pour MLP, la Table \ref{params_ada} liste les paramètres testés et la Figure \ref{adaboost_depth} montre l'évolution du score en fonction de ces paramètres.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ll}
+paramètre & ensemble des valeurs testées \\
+\hline
+\texttt{n\_estimators} & $[\![1, 99]\!]$ \\
+\texttt{learning\_rate} & $\{k/10 \>\> | \>\> k \in [\![1, 9]\!] \}$ \\
+\texttt{base\_estimator} & Arbres de décision de profondeur maximale dans $[\![2, 9]\!]$\\
+\end{tabular}
+\caption{Liste des paramètres testés pour AdaBoost\label{params_ada}}
+\end{table}
+
+Ici, il y a peu d'interprétations possibles : les paramètres influent peu sur la performance de l'estimateur. Dès lors que les arbres sont suffisamment profonds, qu'il y a assez d'estimateurs agrégés et que le taux d'apprentissage et correct, les résultats sont vite optimaux.
+
+%TODO : détailler, s'il y a lieu, cette interprétation
 
 \begin{figure}
 \centering
