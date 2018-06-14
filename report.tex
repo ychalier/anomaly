@@ -159,10 +159,71 @@ Interface \par \texttt{sklearn} & \multirow{2}{*}{\texttt{tune\_parameters}} & T
 \caption{Méthodes de la classe \texttt{Detector}\label{methodes_detector}}
 \end{table}
 
-
 \section{Méthode d'évaluation}
 
 \chapter{Affinage des scores et résultats}
+
+\section{Recherche des paramètres optimaux}
+
+Une majeure partie de notre temps a été investie dans la recherche des jeux de paramètres optimaux pour chacun des \emph{classifiers} sélectionnés. Nous avons procédé en deux temps. Premièrement, nous avons implémenté un script testant des intervalles de paramètres et renvoyant les meilleurs combinaisons. Puis, nous avons utilisé ce script pour des intervalles de valeurs de paramètres que nous avons jugé pertinents.
+
+\subsection{Recherche exhaustive et validation croisée}
+
+Notre algorithme de recherche des paramètres est basé sur une fonction de scikit-learn, dans le module de sélection de modèle : \texttt{GridSearchCV}. Cette fonction est utilisée dans la méthode \texttt{tune\_parameters} du \texttt{Detector}. Cette fonction effectue une recherche exhaustive d'un jeu de paramètres optimal pour un \emph{classifier} donné à partir d'un dictionnaire dont les clés sont les paramètres à faire varier et les valeurs les listes des valeurs prises par ces paramètres.
+
+Cette fonction utilise de plus la technique de validation croisée. En quelques mots, cette technique consiste en la division des données d'entraînement en $C$ sous-échantillons. 1 sous-échantillon servira à la validation du modèle, tandis que les $C-1$ autres permettront l'entraînement du modèle. On répète cette opération $C$ fois, afin que chaque sous-échantillon soit utilisé pour la validation une fois. La performance du modèle est ensuite évaluée en effectuant la moyenne des $C$ erreurs quadratiques.
+
+La fonction d'évaluation du score utilisée par \texttt{GridSearchCV} est par ailleurs modifiable. Dans le cadre de notre projet, nous nous intéressons au \emph{f1-score} pour évaluer un modèle, et nous souhaitions aussi extraire, si possible, les tendances d'évolution du score en fonction des différents paramètres testés. Nous avons donc implémenté notre propre fonction d'évaluation, prenant en paramètre l'estimateur à évaluer et les matrices de \emph{features} et de \emph{labels} à utiliser pour cela. Cette fonction effectue les opérations suivantes :
+
+\begin{enumerate}
+\item Prédiction des \emph{labels} à partir de la matrice de \emph{features}
+\item Calcul de la matrice de confusion entre la prédiction et la matrice donnée en consigne
+\item \textbf{Sauvegarde des paramètres et du score}
+\item Retour du \emph{f1-score}
+\end{enumerate}
+
+L'étape 3 consiste en l'écriture dans un fichier d'une ligne contenant la description détaillée des paramètres de l'estimateur ainsi que les résultats des scores. La fonction de recherche exhaustive étant fortement parallèle, chaque processus écrit dans son propre fichier. Une fois tous les tests effectués, ces fichiers sont concaténés en un grand fichier. Cette méthode d'enregistrement continu permet en outre de sauvegarder les résultats des tests au fur et à mesure de l'exécution du programme, ce qui se révèlera important lors d'interruptions prématurées de cette exécution.
+
+En effet, ce fut l'un de nos plus importants problèmes lors de ce projet. Pour le Multi-layered Perceptron, il y avait beaucoup de paramètres en jeu, et la complexité combinatoire mélangée avec le temps de convergence des réseaux neuronaux ont rendu l'exécution du script interminables. Notre plus long essai eut lieu sur le serveur InfRes \href{http://lame10.enst.fr}{lame10} doté pourtant de 80 cpus, sur une durée de plus de 18 heures. Malgré tout, il aura fallut interrompre l'exécution du programme manuellement pour rendre le serveur disponible. Le fichier généré pesait plus de 120Mo, et les deux CSV extraits pèsent respectivement 25Mo et 23Mo.
+
+Enfin, du grand fichier généré contenant l'historique de tous les tests passés sont ensuite extraites les tables de score CSV qui seront présentées dans les paragraphes suivant. Ces dernières sont disponibles à l'adresse \url{https://perso.telecom-paristech.fr/ychalier/anomaly/params/}. Pour chaque phase de test, le script génère :
+\begin{itemize}
+\item Un fichier de scores (TPR, FPR, TNR, FNR, PPV, \emph{f1-score}, temps de prédiction)
+\item Pour chaque classe différente d'estimateur, un fichier contenant tous les jeux de paramètres
+\end{itemize}
+Ces tables sont, à la manière des tables en SQL, liées par une clé primaire externe qui est l'identifiant (unique) de la combinaison de paramètres.
+
+\subsection{Multi-layered Perceptron}
+
+\ref{mlp_activation} \ref{mlp_solver}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{img/mlp_activation.png}
+\caption{Évolution du score pour MLP selon la fonction d'activation\label{mlp_activation}}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{img/mlp_solver.png}
+\caption{Évolution du score pour MLP selon l'algorithme de descente du gradient\label{mlp_solver}}
+\end{figure}
+
+\subsection{AdaBoost}
+
+\ref{adaboost_depth}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{img/adaboost_depth.png}
+\caption{Évolution du score pour AdaBoost selon la profondeur maximale de l'arbre de décision\label{adaboost_depth}}
+\end{figure}
+
+\subsection{SVM}
+
+\section{Étude comparative des performances}
+
+\section{Utilisation de la prédiction en-ligne}
 
 % \begin{thebibliography}{9}
 % \end{thebibliography}
