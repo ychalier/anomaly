@@ -44,7 +44,7 @@ CSV files are formatted such that a single test batch is split in several files:
 
 The script [process_output.py](process_output.py) processes thoses CSV files to produce relevant plots. Here is an example:
 
-![Parameters tuning for MLP](mlp_activation.png)
+![Parameters tuning for MLP](img/mlp_activation.png)
 
 ## usage in production
 
