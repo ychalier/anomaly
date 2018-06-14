@@ -4,6 +4,7 @@
 \usepackage[francais]{babel}
 \usepackage{graphicx}
 \usepackage{algorithmic}
+\usepackage{amsmath}
 
 \renewcommand{\thesection}{\Roman{section}}
 \usepackage[]{algorithm2e}
@@ -72,8 +73,13 @@ La fonction suivante permet de résumer le déroulé du processus de prédiction
 \begin{algorithm}[H]
 \SetAlgoLined
 \textbf{Donnée:} Un message i envoyé par un objet communicant contenant:\\
-- Classe de l'objet( Classe_{i}= (Voiture, moto, piéton))\\
-- Dimension de l’objet (Longueur: L_{i}; Largeur: l_{i}). 
+\begin{itemize}
+	\item Classe de l'objet(Classe_{i}= (Voiture, moto, piéton))
+	
+	\item Dimension de l’objet (Longueur: L_{i}; Largeur: l_{i}).
+	
+\end{itemize}
+
 \bigbreak
 
 \KwResult{Détection des objets malicieux}
@@ -91,6 +97,93 @@ La fonction suivante permet de résumer le déroulé du processus de prédiction
 \begin{center}
    \includegraphics[width=\textwidth]{MLFramework.pdf}
 \end{center}
+
+
+
+\section{Méthode d'évaluation}
+
+
+\subsection{Matrice de confusion}
+Une technique pour évaluer la performance d’un algorithme de classification est d’utiliser une matrice de confusion. Il s’agit d’un résumé des résultats de prédiction sur un problème de classification, qui donne un aperçu du degré de confusion de notre modèle. 
+
+\subsubsection{Terminologie}
+Pour définir de manière formelle une matrice de confusion, il convient d’introduire les termes suivant: 
+\begin{itemize}
+\item TP (Vrai Positif): item correctement détecté positif 
+\item FP (Faux Positif): item déclaré positif, là où il est en réalité négatif.
+\item FN (Faux négatif): item déclaré négatif alors qu'il était en réalité positif.
+\item TN (Vrai négatif): item correctement détecté comme négatif
+\end{itemize}
+\\
+
+Ces derniers permettent de définir la classification, correct ou non, des objets données en entrée de notre fonction. Nous pouvons dès lors construire la matrice suivante: 
+
+\begin{tabular}{l|l|c|c|cc}
+\multicolumn{2}{c}{}&\multicolumn{2}{c}{Actual class}&\\
+\cline{3-4}
+\multicolumn{2}{c|}{}&Positive&Negative&\multicolumn{1}{c}{}\\
+\cline{2-4}
+\multirow{Predicted classes}& Positive & $TP$ & $FP$ & $PPV$ & \multicolumn{1}{c}{$FDR$}\\
+\cline{2-4}
+& Negative & $FN$ & $TN$ & $FOR$& \multicolumn{1}{c}{$NPV$} \\
+\cline{2-4}
+\multicolumn{1}{c}{} & \multicolumn{1}{c}{}
+& \multicolumn{1}{c}{$TPR$} & \multicolumn{    1}{c}{$FPR$} & \multicolumn{1}{c}{}\\
+\hhline{~~~~~~}
+\multicolumn{2}{c}{} 
+& \multicolumn{1}{c}{$FNR$} & \multicolumn{1}{c}{$TNR$} & \multicolumn{1}{c}{}\\
+\end{tabular}
+\bigbreak
+
+Pour la suite, et pour comprendre cette matrice, il convient d'introduire les résulats suivants:\\
+\begin{itemize}\setlength{\itemsep}{5mm}
+	\item Ratio de Vrai positif: TPR=\dfrac{TP}{TP+FN}
+	
+	\item Ratio de Vrai négatif: TNR=\dfrac{TN}{TN+FP}
+	
+	\item Ratio de Vrai positif: TPR=\dfrac{TP}{TP+FN}
+	
+	\item Ratio de Vrai négatif: TNR=\dfrac{TN}{TN+FP}
+	
+	\item Ratio de Faux positif: FPR=\dfrac{FP}{TP+TN}
+	
+	\item Ratio de Faux négatif: FNR=\dfrac{FN}{TP+FN}
+	
+	\item Valeur prédictive positive: PPV=\dfrac{TP}{TP+FP}
+	
+	\item Valeur prédictive négative: NPV=\dfrac{TN}{TN+FN}
+	
+	\item Taux de fausses découvertes: TPR=\dfrac{FP}{TP+FP}
+	
+	\item Taux de fausses omissions: FOR=\dfrac{FN}{TN+FN}
+	
+\end{itemize}
+\bigskip\bigskip
+
+Ce mode de représentation permet non seulement de mettre en évidence les erreurs qui sont faites par votre classificateur, mais surtout des types d'erreurs qui sont commises. En effet, l’utilisation de la seule précision peut être trompeuse dans la mesure où le nombre d’observation dans chaque classe est inégale. 
+Pour illustrer ce phénomène, prenons un exemple précis. Considérons l’algorithme SVM (support vector Machine) avec les paramètres suivants:
+\medbreak
+
+\fbox{\begin{minipage}[t]{\textwidth}\begin{small}
+C=0.1, cache--size=200, class--weight=None, coef0=0.0, decision--function--shape='ovr', degree=3, gamma='auto', kernel='linear', max--iter=-1, probability=False, randomState=None, shrinking=True,  tol=1e-05, verbose=False
+\end{small}\end{minipage}}
+\medbreak
+
+La précisions de cet algorithme avec ces paramètres est égale à 0.96660 et renvoie la matrice de confusion suivante:
+
+\medskip
+\begin{center}
+\begin{bmatrix}
+ 2771&74 \\ 
+ 239&  239
+\end{bmatrix}
+\end{center}
+
+\medskip
+Nous remarquons bien que la classification est loin d’être satisfaisante alors que le score de précision est, lui, important. Il y a en effet dans ce dernier aucune pondération. Si une classe contenant un nombre de paramètres important est bien classifiée, elle peut “masquer” les mauvais résultats obtenus pour d’autres classes plus petites.
+
+\subsubsection{Score F1}
+
 
 \begin{thebibliography}{9}
 \bibitem{ref1}
