@@ -3,12 +3,18 @@
 \usepackage[utf8]{inputenc}
 \usepackage[francais]{babel}
 
+\usepackage{multirow}
+
 \usepackage{graphicx}
 \usepackage{hyperref}
+
+\usepackage{enumerate}
 
 \title{Détection d'anomalies de classification dans l'IoT via Machine Learning}
 \author{Antoine Urban, Yohan Chalier}
 \date{\today}
+
+\renewcommand{\arraystretch}{1.2}
 
 \begin{document}
 
@@ -62,23 +68,101 @@ vert & non-malicieux & 3 à 6,5 mètres & 1,4 à 2,4 mètres \\
 gris & malicieux & 3 à 4,1 mètres & 2,05 à 2,4 mètres \\
 gris & malicieux & 5,25 à 6,5 mètres & 1,4 à 1,65 mètres \\
 \end{tabular}
-\label{regions_decision_manuelles_valeurs}
-\caption{Dimensions des régions de décision arbitraires}
+\caption{Dimensions des régions de décision arbitraires\label{regions_decision_manuelles_valeurs}}
 \end{table}
+
+%TODO Parler des records de taille
 
 Hors de la zone verte, et dans les deux cadres gris, nous avons alors généré aléatoirement 700 points définis comme malicieux. La figure \ref{regions_decision_manuelles_plot} représente l'affichage de tous les points décrits plus tôt ainsi que des régions de décision. Ainsi faite, notre classification possède, sur le jeu d'entraînement, une précision de 97,57\%.
 
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{img/first_try.png}
-\label{regions_decision_manuelles_plot}
-\caption{Régions de décision manuelles pour des dimensions de voitures}
+\caption{Régions de décision manuelles pour des dimensions de voitures\label{regions_decision_manuelles_plot}}
 \end{figure}
 
 \section{Recherche des bases de données}
+
 \section{Environnement de travail}
 
+Dans cette partie, nous décrivons les outils utilisés et développés pour poursuivre notre étude. Ces éléments se retrouvent sur le dépôt git que nous avons utilisé pour sauvegarder notre code : \href{https://github.com/ychalier/anomaly/}{github.com/ychalier/anomaly}.
+
+\subsection{Environnement Python}
+
+Afin d'éviter d'éventuels problème de version, nous avons opté pour l'utilisation d'environnements virtuels à l'aide du module \texttt{virtualenv}. Nous avons choisi le noyau Python 3.6. Les modules utilisés sont regroupés dans le fichier requirements.txt présent dans le dépôt git. Les principaux sont :
+\begin{itemize}
+\item \texttt{numpy}
+\item \texttt{pandas}
+\item \texttt{matplotlib}
+\item \texttt{jupyter}
+\item \texttt{scikit-learn}
+\end{itemize}
+
+\subsection{Chargement des bases de données}
+
+Afin de centraliser le chargement des bases de données explicitées plus tôt entre tous les scripts en ayant besoin, nous avons implémenté une fonction de chargement nommée \texttt{load\_detector} dans loader.py. Cette fonction instancie un object de la classe `Detector`, que nous décrirons dans la partie suivante. Elle procède de la façon suivante :
+
+\begin{enumerate}
+\item Pour chaque jeu de données au format CSV
+\begin{enumerate}[{1.}1.]
+\item Lire les colonnes contenant la longueur et la largeur
+\item Renommer ces colonnes en "\texttt{length}" et "\texttt{width}"
+\item Supprimer les lignes incomplètes
+\item Si nécessaire, convertir les données en flottant et en millimètres
+\item Ajouter une colonne contenant la classe correspondant au jeu de données considéré
+\item Appliquer un premier filtre sur la longueur ou la largeur pour supprimer les points extrêmes isolés
+\end{enumerate}
+\item Fusionner toutes les matrices précédentes en une seule
+\item Créer un nouvel objet \texttt{Detector} avec cette matrice en attribut
+\item Supprimer les éventuels redondances
+\item Ajouter une colonne "\texttt{odd}" à la matrice, initialisée à \texttt{False}
+\item \textbf{Générer les données malicieuses}
+\item Ajouter les données malicieuses à la base de données, en rajoutant la colonne "\texttt{odd}" initialisée à \texttt{True}
+\item Remplacer les valeurs des classes (originnellement des chaînes de caractères comme \texttt{"car"} ou \texttt{"human"}) par des entiers
+\item \textbf{Séparer la matrice en un jeu d'entraînement et un jeu de test}
+\item Renvoyer l'objet `Detector` ainsi initialisé
+\end{enumerate}
+
+Dans le cas des bases de données décrites au paragraphe précédent, l'étape 1.6. permet de supprimer quelques points, par exemple une moto de longueur supérieure à 20 mètres, ou une voiture de 6 mètres de large. Bien que réelles, ces données sont trop isolées pour être considérés dans le reste de notre travail.
+
+La DataFrame finale possède 4 colonnes, plus une pour l'index. Ces colonnes sont la classe du véhicule (entier), la longueur (flottant), la largeur (flottant), et le caractère malicieux (booléen).
+
+\paragraph{Génération des données malicieuses} Pour un nombre de points à générer donné, le programme génère des points uniformément dans la zone rectangulaire définie par les minimums et maximums de longueur et de largeur de la base de données initiales. À chacun de ces points est associé, uniformément, une classe aléatoire parmi les classes présentes dans la base de données. La génération utilise un \emph{seed} entier entre 0 et $2^{32}-1$, ré-utilisable ultérieurement pour générer le même jeu de données.
+
+\paragraph{Séparation de la matrice} Avec le \emph{seed} généré précédemment, la grande matrice est tout d'abord mélangée pour éviter d'avoir toutes les données triées. Puis, elle est coupée en deux moitiés :
+\begin{itemize}
+\item le jeu d'entraînement
+\item le jeu de test
+\end{itemize}
+Enfin, on procède à la division de chacune de ces matrices en deux matrices, une pour les \emph{features} et une pour le label de sortie (le caractère malicieux). Au final, chacune de ces DataFrames (\texttt{x\_train}, \texttt{y\_train}, \texttt{x\_test} et \texttt{y\_test}) est stockée dans l'objet \texttt{Detector}.
+
+\subsection{Classe \texttt{Detector}}
+
+Comme expliqué précédemment, cette classe stocke les jeux de données utilisés pour l'entraînement et la prédiction. Elle va aussi permettre de centraliser les tests de \emph{classifiers}, et l'affichage des données. Ses méthodes (Table \ref{methodes_detector}) sont donc une sorte d'API pour la réalisation de la fonction de prédiction finale, objectif du projet.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{p{2.3cm} p{3.1cm} p{4.6cm}}
+
+\multirow{6}{*}{Pre-processing}& \multirow{2}{*}{\texttt{clean}} & Étapes 4 et 5 du chargement des données \\
+& \multirow{2}{*}{\texttt{append\_odd\_points}} & Étape 7 du chargement des données \\
+& \multirow{2}{*}{\texttt{format}} & Étapes 8 et 9 du chargement des données \\
+\hline
+& \multirow{2}{*}{\texttt{classify}} & Entraîne un \emph{classifier} et renvoie le score de test\\
+Interface \par \texttt{sklearn} & \multirow{2}{*}{\texttt{tune\_parameters}} & Trouve le meilleur jeu de paramètres pour un \emph{classifier}\\
+& \multirow{2}{*}{\texttt{predict}} & Fonction finale de prédiction online \\
+\hline
+\multirow{4}{*}{Affichage}& \multirow{2}{*}{\texttt{plot}} & Affiche la matrice de données complètes\\
+& \texttt{plot\_decision\_}\par\texttt{boudaries} & Affiche les régions de décisions d'un \emph{classifier}\\
+
+\end{tabular}
+\caption{Méthodes de la classe \texttt{Detector}\label{methodes_detector}}
+\end{table}
+
+
 \section{Méthode d'évaluation}
+
+\chapter{Affinage des scores et résultats}
 
 % \begin{thebibliography}{9}
 % \end{thebibliography}
