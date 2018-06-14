@@ -2,9 +2,11 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage[francais]{babel}
-
 \usepackage{graphicx}
-\usepackage{hyperref}
+\usepackage{algorithmic}
+
+\renewcommand{\thesection}{\Roman{section}}
+\usepackage[]{algorithm2e}
 
 \title{Détection d'anomalies de classification dans l'IoT via Machine Learning}
 \author{Antoine Urban, Yohan Chalier}
@@ -35,52 +37,78 @@
 
 
 \begin{abstract}
+Dans le contexte de l’internet des objets, les messages peuvent contenir de fausses informations générées par un utilisateur authentifié. Par conséquence, les mécanismes de sécurité reposant sur le chiffrement et la signature sont inutiles face à ces attaques. Les algorithmes reposant sur l’apprentissage machine (Machine Learning) permet de classer si un objet  émettant des données est malicieux ou non 
 \end{abstract}
 
-\chapter{Démarche et stratégie}
+\section{Introduction}
+L’exercice de la conduite est synonyme de changements constant. Ainsi, lorsque nous conduisons, notre attention est tout entière consacré à notre environnement, car notre sécurité est celle des personnes qui nous entourent sont en jeu. Nous prêtons ainsi naturellement une attention toute particulière aux obstacles qui peuvent surgir, qu’il s’agisse tout simplement d’autres voitures partageant la route, des piétons ou encore des motocyclistes. 
+Longtemps objets fantasmés, les véhicules autonomes deviennent aujourd’hui réalités grâce aux incroyables progrès réalisés dans les domaines de l’intelligence artificielle et du développement de capteurs. Si ces processus visent à remplacer le conducteur humain, il semble naturel qu’ils prêtent la même attention aux obstacles. Les méthodes utilisées se doivent d’être fiables et performante, car en matière de sécurité, le droit à l’erreur n’existe pas ! \\
 
-\section{Première implémentation}
+Dans ce travail, nous nous concentrerons sur les 3 types d’obstacles les plus communs sur une route:
+\begin{itemize}
+\item Une voiture ;
+\item Une moto;
+\item Un piéton.
 
-\subsection{Objectif}
+\end{itemize}
 
-En premier lieu, nous souhaitions commencer par une vision globale des données et du travail à effectuer. Nous disposions d'une base de données contenant des mesures de voiture, provenant de \href{http://www.carqueryapi.com}{CarQuery}, et contenant 54808 lignes complètes. Dans cette partie, nous allons nous efforcer d'obtenir une première fonction de classification se basant sur des critères très simple : des régions de décision rectangulaires et arbitraires.
+Tout travail sur l’analyse d’obstacles nécessite la détection préalable de régions d’intérêt en utilisant par exemple la méthode du “point-in-polygon”\cite{ref1}, ou encore à l’aide de capteurs à ultrasons et d’analyse de signal\cite{ref2}. Ce travail n’a pas comme objectif de revenir sur l’utilisation de ces techniques, mais se concentrera sur l’analyse à posteriori des dimensions ainsi collectées avec pour but de proposer une classification efficace. 
 
-\subsection{Mise en {\oe}uvre}
+\subsection*{Objectifs}
+A travers un cas simple, nous cherchons à vérifier l’appartenance d’un objet à une classe (e.g. un véhicule) en utilisant un algorithme de machine learning et les dimensions de l’objet. Il s’agit donc de proposer un modèle de classification multi-classes en réalisant un classeur à partir d’un algorithme d’apprentissage supervisé. 
+Au préalable, nous nous assurons de trouver des bases de données avec les dimensions pour chacune des classes pour entraîner et valider notre modèle. 
+Ensuite, nous proposerons une méthodologie de sélection d’un algorithme d’apprentissage supervisé en évaluant leur précision et leur efficacité respectives. Dans ce travail, nous avons considérés les algorithmes (c) suivant: 
+\begin{itemize}
+\item Réseau de Neurones (c = 1) ;
+\item Adaboost (c = 2);
+\item SVM(c=3);
+\item Random Forest (c=4).
+\end{itemize}
+\medbreak
 
-Puisque l'objectif de cette étude est la détection d'anomalies dans la mesure de longueur et de largeur, nous avons extrait les deux colonnes correspondantes dans une DataFrame du module \href{http://pandas.pydata.org}{Pandas}, en Python.
+La fonction suivante permet de résumer le déroulé du processus de prédiction:\\
+\RestyleAlgo{boxruled}
 
-Après un premier affichage des données, il est apparu que beaucoup de points apparaissaient en plusieurs fois, aussi la séparation de la base de données en points uniques et points non-uniques se révéla pertinente. Cela permit de réduire le nombre de lignes à 5026.
+\begin{algorithm}[H]
+\SetAlgoLined
+\textbf{Donnée:} Un message i envoyé par un objet communicant contenant:\\
+- Classe de l'objet( Classe_{i}= (Voiture, moto, piéton))\\
+- Dimension de l’objet (Longueur: L_{i}; Largeur: l_{i}). 
+\bigbreak
 
-Manuellement, nous avons alors défini des zones simples (rectangulaires) en tant que régions de décision (Table \ref{regions_decision_manuelles_valeurs}). Ces zones ont été définies au jugé, afin d'encadrer le plus de points valides sans toutefois englober une zone de l'espace trop large.
+\KwResult{Détection des objets malicieux}
+\medbreak
+\eIf{function (Class, Longueur, Largeur)}{
+  Return “malicieux”\;
+  }{
+  Return “non malicieux”\;
+}
+\caption{Fonction de production}
+\end{algorithm}
+\medbreak
 
-\begin{table}[h]
-\centering
-\begin{tabular}{llll}
-cadre & validité & intervalle de longueur & intervalle de largeur \\
-\hline
-vert & non-malicieux & 3 à 6,5 mètres & 1,4 à 2,4 mètres \\
-gris & malicieux & 3 à 4,1 mètres & 2,05 à 2,4 mètres \\
-gris & malicieux & 5,25 à 6,5 mètres & 1,4 à 1,65 mètres \\
-\end{tabular}
-\label{regions_decision_manuelles_valeurs}
-\caption{Dimensions des régions de décision arbitraires}
-\end{table}
 
-Hors de la zone verte, et dans les deux cadres gris, nous avons alors généré aléatoirement 700 points définis comme malicieux. La figure \ref{regions_decision_manuelles_plot} représente l'affichage de tous les points décrits plus tôt ainsi que des régions de décision. Ainsi faite, notre classification possède, sur le jeu d'entraînement, une précision de 97,57\%.
+\begin{center}
+   \includegraphics[width=\textwidth]{MLFramework.pdf}
+\end{center}
 
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{img/first_try.png}
-\label{regions_decision_manuelles_plot}
-\caption{Régions de décision manuelles pour des dimensions de voitures}
-\end{figure}
+\begin{thebibliography}{9}
+\bibitem{ref1}
+          Deepika, N AND Sajith Variyar, V. V.,
+          Obstacle classification and detection for vision based navigation for autonomous driving,
+          Addison Wesley, Massachusetts,
+          IEEEl,
+          2017.
+     
+         
+\bibitem{red2}
+          Gerard Gibbs and Huamin Jia and Irfan Madani,
+          Obstacle Detection with Ultrasonic Sensors and Signal Analysis Metrics,
+          Transportation Research Procedia,
+          2017.
+          
+\end{thebibliography}
 
-\section{Recherche des bases de données}
-\section{Environnement de travail}
 
-\section{Méthode d'évaluation}
-
-% \begin{thebibliography}{9}
-% \end{thebibliography}
 
 \end{document}
