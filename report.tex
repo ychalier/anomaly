@@ -6,7 +6,11 @@
 \usepackage{multirow}
 
 \usepackage{graphicx}
+% \usepackage{algorithmic}
+\usepackage{amsmath}
 \usepackage{hyperref}
+
+\usepackage[french]{algorithm2e}
 
 \usepackage{enumerate}
 
@@ -39,9 +43,60 @@
 \end{titlepage}
 
 
-
 \begin{abstract}
+Dans le contexte de l'internet des objets, les messages peuvent contenir de fausses informations générées par un utilisateur authentifié. Par conséquence, les mécanismes de sécurité reposant sur le chiffrement et la signature sont inutiles face à ces attaques. Les algorithmes reposant sur l'apprentissage machine (Machine Learning) permet de classer si un objet  émettant des données est malicieux ou non. 
 \end{abstract}
+
+\chapter{Introduction}
+
+L'exercice de la conduite est synonyme de changements constant. Ainsi, lorsque nous conduisons, notre attention est tout entière consacré à notre environnement, car notre sécurité est celle des personnes qui nous entourent sont en jeu. Nous prêtons ainsi naturellement une attention toute particulière aux obstacles qui peuvent surgir, qu'il s'agisse tout simplement d'autres voitures partageant la route, des piétons ou encore des motocyclistes. 
+
+Pendant longtemps fantasmés, les véhicules autonomes deviennent aujourd'hui réalité, grâce à l' incroyable progrès réalisé dans les domaines de l'intelligence artificielle et du développement de capteurs. Si ces processus visent à remplacer le conducteur humain, il semble naturel qu'ils prêtent la même attention aux obstacles. Les méthodes utilisées se doivent d'être fiables et performante, car en matière de sécurité, le droit à l'erreur n'existe pas.
+
+~\par
+
+Dans ce travail, nous nous concentrerons sur les trois types d'obstacles les plus communs sur une route :
+\begin{itemize}
+\item une voiture ;
+\item une moto ;
+\item un piéton.
+
+\end{itemize}
+
+Tout travail sur l'analyse d'obstacles nécessite la détection préalable de régions d'intérêt en utilisant par exemple la méthode du "point-in-polygon"\cite{ref1}, ou encore à l'aide de capteurs à ultrasons et d'analyse de signal\cite{ref2}. Ce travail n'a pas comme objectif de revenir sur l'utilisation de ces techniques, mais se concentrera sur l'analyse à posteriori des dimensions ainsi collectées avec pour but de proposer une classification efficace. 
+
+\section*{Objectifs}
+A travers un cas simple, nous cherchons à vérifier l'appartenance d'un objet à une classe (e.g. un véhicule) en utilisant un algorithme de machine learning et les dimensions de l'objet. Il s'agit donc de proposer un modèle de classification multi-classes en réalisant un classeur à partir d'un algorithme d'apprentissage supervisé. 
+Au préalable, nous nous assurons de trouver des bases de données avec les dimensions pour chacune des classes pour entraîner et valider notre modèle. 
+Ensuite, nous proposerons une méthodologie de sélection d'un algorithme d'apprentissage supervisé en évaluant leur précision et leur efficacité respectives. Dans ce travail, nous avons considérés les algorithmes (c) suivant: 
+\begin{itemize}
+\item Réseau de Neurones (c = 1) ;
+\item Adaboost (c = 2) ;
+\item SVM(c=3) ;
+\item Random Forest (c=4).
+\end{itemize}
+
+~\par
+
+\noindent L'Algorithme \ref{alg:prediction} permet de résumer le déroulé du processus de prédiction.
+
+\RestyleAlgo{boxruled}
+\begin{algorithm}[h]
+\SetAlgoLined
+
+\medbreak
+
+\Donnees{Un message $i$ envoyé par un objet communicant contenant la classe de l'objet (classe\textsubscript{$i$} $\in$ $\{$voiture, moto, piéton$\}$) et les dimensions de l'objet (longueur\textsubscript{$i$}; largeur\textsubscript{$i$})}
+
+\medbreak
+
+\Res{Détection des objets malicieux}
+
+\medbreak
+
+\eSi{fonction(classe\textsubscript{$i$}, longueur\textsubscript{$i$}, largeur\textsubscript{$i$})}{\Retour{"malicieux"}}{\Retour{"non-malicieux"}}
+\caption{Fonction de prédiction\label{alg:prediction}}
+\end{algorithm}
 
 \chapter{Démarche et stratégie}
 
@@ -160,6 +215,77 @@ Interface \par \texttt{sklearn} & \multirow{2}{*}{\texttt{tune\_parameters}} & T
 \end{table}
 
 \section{Méthode d'évaluation}
+
+
+\subsection{Matrice de confusion}
+Une technique pour évaluer la performance d'un algorithme de classification est d'utiliser une matrice de confusion. Il s'agit d'un résumé des résultats de prédiction sur un problème de classification, qui donne un aperçu du degré de confusion de notre modèle. 
+
+\subsubsection{Terminologie}
+Pour définir de manière formelle une matrice de confusion, il convient d'introduire les termes suivants : 
+\begin{itemize}
+\item TP (Vrai Positif): item correctement détecté positif 
+\item FP (Faux Positif): item déclaré positif, là où il est en réalité négatif
+\item FN (Faux négatif): item déclaré négatif alors qu'il était en réalité positif
+\item TN (Vrai négatif): item correctement détecté comme négatif
+\end{itemize}
+
+Ces derniers permettent de définir la classification, correcte ou non, des objets données en entrée de notre fonction. Nous pouvons dès lors construire la matrice suivante : 
+
+\begin{tabular}{ l | l | c | c | c c}
+\multicolumn{2}{c}{} & \multicolumn{2}{c}{Classe réelle} & \\
+\cline{3-4}
+\multicolumn{2}{c|}{} & Positif & Négatif \\
+\cline{2-4}
+\multirow{2}{*}{Classe prédite} & Positif & $TP$ & $FP$ & $PPV$ & $FDR$ \\
+\cline{2-4}
+& Négatif & $FN$ & $TN$ & $FOR$ & $NPV$ \\
+\cline{2-4}
+\multicolumn{1}{r}{} & \multicolumn{1}{l}{} & \multicolumn{1}{c}{$TPR$} & \multicolumn{1}{c}{$FPR$} \\
+\multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{c}{$FNR$} & \multicolumn{1}{c}{$TNR$} \\
+\end{tabular}
+
+~\par
+
+Pour la suite, et pour comprendre cette matrice, il convient d'introduire les résulats suivants:
+
+\begin{itemize}\setlength{\itemsep}{1.5mm}
+\item ratio de vrai positif: $TPR=\dfrac{TP}{TP+FN}$
+\item ratio de vrai négatif: $TNR=\dfrac{TN}{TN+FP}$
+\item ratio de vrai positif: $TPR=\dfrac{TP}{TP+FN}$
+\item ratio de vrai négatif: $TNR=\dfrac{TN}{TN+FP}$
+\item ratio de faux positif: $FPR=\dfrac{FP}{TP+TN}$
+\item ratio de faux négatif: $FNR=\dfrac{FN}{TP+FN}$
+\item valeur prédictive positive: $PPV=\dfrac{TP}{TP+FP}$
+\item valeur prédictive négative: $NPV=\dfrac{TN}{TN+FN}$
+\item taux de fausses découvertes: $TPR=\dfrac{FP}{TP+FP}$
+\item taux de fausses omissions: $FOR=\dfrac{FN}{TN+FN}$
+\end{itemize}
+
+~\par
+
+Ce mode de représentation permet non seulement de mettre en évidence les erreurs qui sont faites par votre classificateur, mais surtout des types d'erreurs qui sont commises. En effet, l'utilisation de la seule précision peut être trompeuse dans la mesure où le nombre d'observation dans chaque classe est inégale. 
+Pour illustrer ce phénomène, prenons un exemple précis. Considérons l'algorithme SVM (support vector Machine) avec les paramètres suivants:
+\medbreak
+
+\begin{center}
+\noindent
+\fbox{\begin{minipage}[t]{.9\textwidth}\begin{small}
+C=0.1, cache--size=200, class--weight=None, coef0=0.0, decision--function--shape='ovr', degree=3, gamma='auto', kernel='linear', max--iter=-1, probability=False, randomState=None, shrinking=True,  tol=1e-05, verbose=False
+\end{small}\end{minipage}}
+\end{center}
+\medbreak
+
+La précisions de cet algorithme avec ces paramètres est égale à 0.96660 et renvoie la matrice de confusion suivante:
+
+$$\begin{bmatrix}
+2771 & 74 \\ 
+239 & 239 \\
+\end{bmatrix}$$
+
+\medskip
+Nous remarquons bien que la classification est loin d'être satisfaisante alors que le score de précision est, lui, important. Il y a en effet dans ce dernier aucune pondération. Si une classe contenant un nombre de paramètres important est bien classifiée, elle peut "masquer" les mauvais résultats obtenus pour d'autres classes plus petites.
+
+\subsubsection{Score F1}
 
 \chapter{Paramétrage et résultats}
 
@@ -288,6 +414,12 @@ paramètre & valeur \\
 
 \section{Étude comparative des performances}
 
+\chapter{Conclusions}
+
+\begin{center}
+   \includegraphics[width=\textwidth]{MLFramework.pdf}
+\end{center}
+
 \section{Utilisation de la prédiction en-ligne}
 
 L'objectif final de ce projet est la mise à disposition d'une fonction de prédiction autonome permettant de classer des données relevées par un ensemble de capteurs en malicieux / non-malicieux.
@@ -313,7 +445,22 @@ def classify(class_, length, width):
 \end{verbatim}
 Cette fonction est autonome et portable; elle ne nécessite qu'un fichier contenant la méthode citée précédemment. 
 
-% \begin{thebibliography}{9}
-% \end{thebibliography}
+
+\begin{thebibliography}{9}
+\bibitem{ref1}
+          Deepika, N AND Sajith Variyar, V. V.,
+          Obstacle classification and detection for vision based navigation for autonomous driving,
+          Addison Wesley, Massachusetts,
+          IEEEl,
+          2017.
+     
+         
+\bibitem{ref2}
+          Gerard Gibbs and Huamin Jia and Irfan Madani,
+          Obstacle Detection with Ultrasonic Sensors and Signal Analysis Metrics,
+          Transportation Research Procedia,
+          2017.
+          
+\end{thebibliography}
 
 \end{document}
