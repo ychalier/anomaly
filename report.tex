@@ -362,17 +362,16 @@ Enfin, la Table \ref{best_params_mlp} donne les résultats donnés par la recher
 \begin{tabular}{ll}
 paramètre & valeur \\
 \hline
-\texttt{learning\_rate} & \\
-\texttt{alpha} &  \\
+\texttt{learning\_rate} & \texttt{'constant'} \\
+\texttt{alpha} & \texttt{$10^{-6}$} \\
 \texttt{activation} & \texttt{'tanh'} \\
 \texttt{solver} & \texttt{'lbfgs'} \\
-\texttt{hidden\_layer\_sizes} & \\
+\texttt{hidden\_layer\_sizes} & \texttt{[28, 28, 28]}\\
 \end{tabular}
 \caption{Paramètres optimaux pour MLP\label{best_params_mlp}}
 \end{table}
 
 %TODO : insister plus sur les problèmes de variance / inconsistence
-%TODO : vérifier pour learning_rate / alpha
 
 \subsection{AdaBoost}
 
