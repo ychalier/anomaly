@@ -37,6 +37,7 @@ if sys.argv[1] == "mlp":
         params['hidden_layer_sizes'].map(count_layers)
     params['hidden_layer_size'] =\
         params['hidden_layer_sizes'].map(layer_size)
+    params['alpha'] = params['alpha'].map(lambda x: float(x))
 
     activation_color = {
         "identity": 'red',
@@ -49,6 +50,12 @@ if sys.argv[1] == "mlp":
         "lbfgs": 'red',
         "sgd": 'green',
         "adam": 'blue'
+    }
+
+    learning_rate_color = {
+        "constant": 'red',
+        "invscaling": 'green',
+        "adaptive": 'blue'
     }
 
     fig = plt.figure(figsize=(12, 12))
@@ -80,6 +87,19 @@ if sys.argv[1] == "mlp":
     plt.legend(handlelist, solver_color.keys(), loc='best')
     plt.title("MLP score based on solver function")
     plt.savefig('mlp_solver.png')
+
+    fig = plt.figure(figsize=(12, 12))
+    handlelist = [plt.plot([], marker="o", ls="", color=color)[0]\
+                    for color in learning_rate_color.values()]
+    ax = fig.add_subplot(111)
+    ax.scatter(params['alpha'],\
+               scores['f1'],\
+               c=[learning_rate_color[x] for x in params["learning_rate"]])
+    ax.set_xlabel("alpha")
+    ax.set_ylabel("f1 score")
+    plt.legend(handlelist, learning_rate_color.keys(), loc='best')
+    plt.title("MLP score based on learning rate")
+    plt.savefig('mlp_learning.png')
 
 elif sys.argv[1] == "ada":
     params["base_estimator__max_depth"] =\
