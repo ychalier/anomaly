@@ -117,6 +117,7 @@ CQA_Premium.*
 *.toc
 *.vrb
 *.dvi
+*.ps
 
 # output classifier
 *.clf
