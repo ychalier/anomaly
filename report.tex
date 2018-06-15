@@ -290,6 +290,29 @@ paramètre & valeur \\
 
 \section{Utilisation de la prédiction en-ligne}
 
+L'objectif final de ce projet est la mise à disposition d'une fonction de prédiction autonome permettant de classer des données relevées par un ensemble de capteurs en malicieux / non-malicieux.
+
+Cette fonction est déjà implémentée dans le code, il s'agit de la méthode \texttt{predict} de la classe \texttt{Detector}. Le processus pour initialiser cette fonction est le suivant :
+\begin{enumerate}
+\item Créer un objet \texttt{Detector} en chargeant les bases de données récoltées
+\item Entraîner un \emph{classifier}, dont les paramètres sont ceux résultant de l'optimisation effectuée précédemment, avec ces données
+\item Attribuer ce \emph{classifier} en tant que \emph{classifier} de prédiction pour le \texttt{Detector}
+\item Sauvegarder la méthode \texttt{predict}
+\end{enumerate}
+La dernière étape de ce processus consiste en la sérialisation de la méthode, à l'aide du module \texttt{pickle}. La méthode, contenant une référence à l'estimateur sélectionné, possède tous les éléments pour effectuer les prédictions. Son utilisation peut alors être résumée à l'aide de la fonction suivante :
+\begin{verbatim}
+def classify(class_, length, width):
+    import pickle
+    file = open('anomaly_classifier.clf', 'rb')
+    fun = pickle.load(file)
+    file.close()
+    if fun(class_, length, width):
+        return "malicious"
+    else:
+        return "non-malicous"
+\end{verbatim}
+Cette fonction est autonome et portable; elle ne nécessite qu'un fichier contenant la méthode citée précédemment. 
+
 % \begin{thebibliography}{9}
 % \end{thebibliography}
 
