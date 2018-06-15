@@ -225,11 +225,25 @@ paramètre & ensemble des valeurs testées \\
 \caption{Évolution du score pour MLP selon l'algorithme de descente du gradient\label{mlp_solver}}
 \end{figure}
 
-L'exploitation des résultats est rendue très difficile par le manque de consistance des scores. Cependant, nous avons pu remarqués que des paramètres comme la régularisation (\texttt{alpha}) ou la taille et nombre de \emph{layers} n'avaient que peu d'influence sur les résultats. Par contre, deux éléments semblent ce dégager :
-\begin{itemize}
+L'exploitation des résultats est rendue très difficile par le manque de consistance des scores. Cependant, nous avons pu remarqués que des paramètres comme la régularisation (\texttt{alpha}) ou la taille et nombre de \emph{layers} n'avaient que peu d'influence sur les résultats. Par contre, deux éléments semblent ce dégager : \begin{itemize}
 \item la tangente hyperbolique comme fonction d'activation
 \item \emph{lbfgs} comme méthode du gradient (la documentation de sklearn prédit cette préférence lorsqu'il y a peu de données à exploiter)
 \end{itemize}
+Enfin, la Table \ref{best_params_mlp} donne les résultats donnés par la recherche exhaustive et validation croisée.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ll}
+paramètre & valeur \\
+\hline
+\texttt{learning\_rate} & \\
+\texttt{alpha} &  \\
+\texttt{activation} & \texttt{'tanh'} \\
+\texttt{solver} & \texttt{'lbfgs'} \\
+\texttt{hidden\_layer\_sizes} & \\
+\end{tabular}
+\caption{Paramètres optimaux pour MLP\label{best_params_mlp}}
+\end{table}
 
 %TODO : insister plus sur les problèmes de variance / inconsistence
 %TODO : vérifier pour learning_rate / alpha
@@ -250,9 +264,19 @@ paramètre & ensemble des valeurs testées \\
 \caption{Liste des paramètres testés pour AdaBoost\label{params_ada}}
 \end{table}
 
-Ici, il y a peu d'interprétations possibles : les paramètres influent peu sur la performance de l'estimateur. Dès lors que les arbres sont suffisamment profonds, qu'il y a assez d'estimateurs agrégés et que le taux d'apprentissage et correct, les résultats sont vite optimaux.
+Ici, il y a peu d'interprétations possibles : les paramètres influent peu sur la performance de l'estimateur. Dès lors que les arbres sont suffisamment profonds, qu'il y a assez d'estimateurs agrégés et que le taux d'apprentissage et correct, les résultats sont vite optimaux. La fonction de recherche exhaustive nous a renvoyé la combinaison de paramètres présentée dans la Table \ref{best_params_ada} (pour un \emph{f1-score} moyen maximal de 0,947).
 
-%TODO : détailler, s'il y a lieu, cette interprétation
+\begin{table}[h]
+\centering
+\begin{tabular}{ll}
+paramètre & valeur \\
+\hline
+\texttt{n\_estimators} & 46 \\
+\texttt{learning\_rate} & 0,3 \\
+\texttt{base\_estimator} & Arbres de décision de profondeur maximale 3\\
+\end{tabular}
+\caption{Paramètres optimaux pour AdaBoost\label{best_params_ada}}
+\end{table}
 
 \begin{figure}
 \centering
