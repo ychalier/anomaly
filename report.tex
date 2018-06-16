@@ -462,6 +462,33 @@ paramètre & ensemble des valeurs testées \\
 \caption{Liste des paramètres testés pour SVM\label{params_svm}}
 \end{table}
 
+Nous noterons que pour tous les essais, LinearSVC a eu pour paramètres:
+\begin{center}
+penalty='l1',dual=False
+\end{center}
+En effet, comme nous avons trois classes pour deux caractéristiques de sélection, il est plus performant de résoudre le problème primal (par défaut, le dual est séléctionné). De plus, GridsearchCV ne permet pas la combinaison du  Nous avons eu comme le meilleur résultat avec la combinaison des paramètres suivants:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ll}
+paramètre & valeur \\
+\hline
+\texttt{multi\_class} & crammer\_singer \\
+\texttt{C} & 100 \\
+\texttt{tol} & 0.00001\\
+\end{tabular}
+\caption{Paramètres optimaux pour SVM\label{best_params_svm}}
+\end{table}
+
+Pour ces paramètres, nous obtenons la matrice de confusion suivante:
+$$\begin{bmatrix}
+2836 & 1 \\ 
+400 & 86 \\
+\end{bmatrix}$$
+
+Il faut tout de même noter que ces résultats sont sujets à des fortes variations.
+
+
 
 \section{Étude comparative des performances}
 
