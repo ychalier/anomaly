@@ -52,6 +52,7 @@ Dans ce travail, nous nous concentrerons sur les 3 types d’obstacles les plus 
 \item Un piéton.
 
 \end{itemize}
+\medskip
 
 Tout travail sur l’analyse d’obstacles nécessite la détection préalable de régions d’intérêt en utilisant par exemple la méthode du “point-in-polygon”\cite{ref1}, ou encore à l’aide de capteurs à ultrasons et d’analyse de signal\cite{ref2}. Ce travail n’a pas comme objectif de revenir sur l’utilisation de ces techniques, mais se concentrera sur l’analyse à posteriori des dimensions ainsi collectées avec pour but de proposer une classification efficace. 
 
@@ -115,9 +116,9 @@ Pour définir de manière formelle une matrice de confusion, il convient d’int
 \item TN (Vrai négatif): item correctement détecté comme négatif
 \end{itemize}
 \\
-
+\medskip
 Ces derniers permettent de définir la classification, correct ou non, des objets données en entrée de notre fonction. Nous pouvons dès lors construire la matrice suivante: 
-
+\bigskip
 \begin{tabular}{l|l|c|c|cc}
 \multicolumn{2}{c}{}&\multicolumn{2}{c}{Actual class}&\\
 \cline{3-4}
@@ -169,7 +170,7 @@ C=0.1, cache--size=200, class--weight=None, coef0=0.0, decision--function--shape
 \end{small}\end{minipage}}
 \medbreak
 
-La précisions de cet algorithme avec ces paramètres est égale à 0.96660 et renvoie la matrice de confusion suivante:
+Le taux d'exactitude de cet algorithme avec ces paramètres est égale à 0.96660 et renvoie la matrice de confusion suivante:
 
 \medskip
 \begin{center}
@@ -180,9 +181,67 @@ La précisions de cet algorithme avec ces paramètres est égale à 0.96660 et r
 \end{center}
 
 \medskip
-Nous remarquons bien que la classification est loin d’être satisfaisante alors que le score de précision est, lui, important. Il y a en effet dans ce dernier aucune pondération. Si une classe contenant un nombre de paramètres important est bien classifiée, elle peut “masquer” les mauvais résultats obtenus pour d’autres classes plus petites.
+Nous remarquons bien que la classification est loin d’être satisfaisante alors que le score d'exactitude est, lui, important. Il y a en effet dans ce dernier aucune pondération. Si une classe contenant un nombre de paramètres important est bien classifiée, elle peut “masquer” les mauvais résultats obtenus pour d’autres classes plus petites.
 
 \subsubsection{Score F1}
+
+Comme nous l’avons vu, le taux d’exactitude reste trop général pour correctement caractériser la performance d’une classification. Nous allons donc utiliser une autre métrique: le score F1. Pour ce faire, introduisons deux termes:\\
+
+\medskip
+\textbf{La précision}: la précision est le ratio d’observations positives correctement prédites sur le total des observations positives prédites. On a donc:
+\begin{equation}
+	Precision = \dfrac{TP}{TP+FP}
+\end{equation}\\
+
+\bigskip
+\textbf{Le taux de rappel}: le taux de rappel est le ratio d’observations positives correctement prédites sur le total des observation de cette classe. On a donc:\\
+\begin{equation}
+	Recall = \dfrac{TP}{TP+FN}
+\end{equation}
+\\
+
+\bigskip
+Il est souvent intéressant de comparer 2 versions d’un classeur pour déterminer lequel est le plus performant. Une idée intuitive serait de faire la moyenne de la précision et du taux de rappel. Pourtant, dans le cas d’une précision très mauvaise et d’un taux de rappel très élevé, nous pouvons rapidement à une mauvaise estimation de la performance de notre algorithme. C’est pour cette raison que nous introduisons une nouvelle métrique: \textbf{le score F1}. elle est défini comme étant la moyenne harmonique de la précision et du taux de rappel. On a donc:
+\begin{equation}
+
+	F1 Score = \dfrac{2*(Recall * Precision)}{(Recall + Precision)} = 2*\dfrac{ppv * tpr}{ppv + tpr}
+\end{equation}\\
+
+\medskip
+Dans notre cas, nous cherchons à minimiser le nombre de faux positifs et de faux négatifs. L’utilisation du score F1 nous permet de les prendre tous deux en compte.  
+
+
+
+\\
+\\
+\subsection{SVM}
+L’algorithme du SVM est initialement définis pour la discrimination d’une variable qualitative binaire. Il est à ce titre particulièrement indiqué dans le cas de problèmes linéairement séparables. Or, nous sommes en présences d’un problème à 3 classes. Nous allons donc devoir adapter la méthode générale. Plusieurs adaptations existent. Parmi ces dernières, nous avons considéré les deux suivantes:
+
+\begin{itemize}
+
+\item La méthode \textbf{"One-Versus-the-Rest"} est la plus simple et la plus ancienne des méthodes d'otpimisation indirectes. Il s'agit d'une extension au cas multiclasses proposée par Vapnik\cite{Vapnik}. Elle consiste à construire p classifieurs binaires (à vecteurs de supports) pour classifier p classes. S’il s’agit d’une extension facile à mettre en place, cette méthode risque d’introduire artificiellement un déséquilibre des classes dans la construction des modèles individuels. \\
+
+
+\medskip
+\item Méthode directe de \textbf{Crammer et Singer}\cite{Crammer}: Contrairement aux schémas de décomposition indirect (comme la méthode ‘OVR”, cette approche consiste à séparer les classes en résolvant un unique problème d’optimisation.Ainsi, cela revient à résoudre un problème d’optimisation à (p-1).n contraintes (où p est le nombre de classe et n le nombre d’observations).
+\end{itemize}
+
+\bigskip
+Comme pour les méthodes précédentes, la table\ref{params_svm} liste les paramètres testés
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ll}
+paramètre & ensemble des valeurs testées \\
+\hline
+
+\texttt{multi\_class} & ‘ovr’ , ‘crammer\_singer’ \\
+\texttt{C} & $\{10^k \>\> | \>\> k \in [\![-2, 3]\!] \}$ \\
+\texttt{tol} & $\{10^-k \>\> | \>\> k \in [\![3, 6]\!] \}$ \\
+\end{tabular}
+
+\caption{Liste des paramètres testés pour SVM\label{params_svm}}
+\end{table}
 
 
 \begin{thebibliography}{9}
@@ -199,7 +258,13 @@ Nous remarquons bien que la classification est loin d’être satisfaisante alor
           Obstacle Detection with Ultrasonic Sensors and Signal Analysis Metrics,
           Transportation Research Procedia,
           2017.
-          
+\bibitem{Vapnik}
+		Vapnik, V.: Statistical Learning Theory. Wiley, New York (1998).
+
+\bibitem{Crammer}
+Crammer, K., Singer, Y.: On the algorithmic implementation of multiclass kernel-based vector machines. J. Mach. Learn. Res. 2, 265–292 (2001)
+
+
 \end{thebibliography}
 
 
