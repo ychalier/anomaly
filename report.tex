@@ -246,7 +246,7 @@ Ces derniers permettent de définir la classification, correcte ou non, des obje
 
 ~\par
 
-Pour la suite, et pour comprendre cette matrice, il convient d'introduire les résulats suivants:
+Pour la suite, et pour comprendre cette matrice, il convient d'introduire les résultats suivants:
 
 \begin{itemize}\setlength{\itemsep}{1.5mm}
 \item ratio de vrai positif: $TPR=\dfrac{TP}{TP+FN}$
@@ -286,30 +286,23 @@ $$\begin{bmatrix}
 Nous remarquons bien que la classification est loin d'être satisfaisante alors que le score de précision est, lui, important. Il y a en effet dans ce dernier aucune pondération. Si une classe contenant un nombre de paramètres important est bien classifiée, elle peut "masquer" les mauvais résultats obtenus pour d'autres classes plus petites.
 
 \subsubsection{Score F1}
-Comme nous l’avons vu, le taux d’exactitude reste trop général pour correctement caractériser la performance d’une classification. Nous allons donc utiliser une autre métrique: le score F1. Pour ce faire, introduisons deux termes:\\
+Comme nous l'avons vu, le taux d'exactitude reste trop général pour correctement caractériser la performance d'une classification. Nous allons donc utiliser une autre métrique: le score F1. Pour ce faire, introduisons deux termes :
 
-\medskip
-\textbf{La précision}: la précision est le ratio d’observations positives correctement prédites sur le total des observations positives prédites. On a donc:
-\begin{equation}
-	Precision = \dfrac{TP}{TP+FP}
-\end{equation}\\
-
-\bigskip
-\textbf{Le taux de rappel}: le taux de rappel est le ratio d’observations positives correctement prédites sur le total des observation de cette classe. On a donc:\\
-\begin{equation}
-	Recall = \dfrac{TP}{TP+FN}
+\begin{description}
+\item[La précision :] la précision est le ratio d’observations positives correctement prédites sur le total des observations positives prédites. On a donc : \begin{equation}
+\text{Precision} = \dfrac{TP}{TP+FP}
 \end{equation}
-\\
+\item[Le taux de rappel :] le taux de rappel est le ratio d'observations positives correctement prédites sur le total des observations de cette classe. On a donc: \begin{equation}
+\text{Recall} = \dfrac{TP}{TP+FN}
+\end{equation}
+\end{description}
 
-\bigskip
-Il est souvent intéressant de comparer 2 versions d’un classeur pour déterminer lequel est le plus performant. Une idée intuitive serait de faire la moyenne de la précision et du taux de rappel. Pourtant, dans le cas d’une précision très mauvaise et d’un taux de rappel très élevé, nous pouvons rapidement à une mauvaise estimation de la performance de notre algorithme. C’est pour cette raison que nous introduisons une nouvelle métrique: \textbf{le score F1}. elle est défini comme étant la moyenne harmonique de la précision et du taux de rappel. On a donc:
+Il est souvent intéressant de comparer deux versions d'un classeur pour déterminer lequel est le plus performant. Une idée intuitive serait de faire la moyenne de la précision et du taux de rappel. Pourtant, dans le cas d'une précision très mauvaise et d'un taux de rappel très élevé, nous pouvons rapidement arriver à une mauvaise estimation de la performance de notre algorithme. C'est pour cette raison que nous introduisons une nouvelle métrique: \textbf{le score F1}. Elle est définie comme étant la moyenne harmonique de la précision et du taux de rappel. On a donc:
 \begin{equation}
+	\text{f1-score} = \dfrac{2\times(\text{Recall} \times \text{Precision})}{(\text{Recall} + \text{Precision})} = 2\times\dfrac{PPV \times TPR}{PPV + TPR}
+\end{equation}
 
-	F1 Score = \dfrac{2*(Recall * Precision)}{(Recall + Precision)} = 2*\dfrac{ppv * tpr}{ppv + tpr}
-\end{equation}\\
-
-\medskip
-Dans notre cas, nous cherchons à minimiser le nombre de faux positifs et de faux négatifs. L’utilisation du score F1 nous permet de les prendre tous deux en compte.  \\
+Dans notre cas, nous cherchons à minimiser le nombre de faux positifs et de faux négatifs. L'utilisation du score F1 nous permet de les prendre tous deux en compte.
 
 \chapter{Paramétrage et résultats}
 
@@ -349,7 +342,7 @@ Ces tables sont, à la manière des tables en SQL, liées par une clé primaire 
 
 À l'aide d'un autre petit script Python, nous avons pu afficher les données récoltées dans les CSV mentionnés plus tôt. Les Figures \ref{mlp_activation} et \ref{mlp_solver} sont le résultat du long test pour les paramètres du MLP. La Table \ref{params_mlp} regroupe les différents paramètres testés.
 
-\begin{table}[h]
+\begin{table}
 \centering
 \begin{tabular}{ll}
 paramètre & ensemble des valeurs testées \\
@@ -381,7 +374,7 @@ L'exploitation des résultats est rendue très difficile par le manque de consis
 \end{itemize}
 Enfin, la Table \ref{best_params_mlp} donne les résultats donnés par la recherche exhaustive et validation croisée.
 
-\begin{table}[h]
+\begin{table}
 \centering
 \begin{tabular}{ll}
 paramètre & valeur \\
@@ -401,7 +394,7 @@ paramètre & valeur \\
 
 Comme pour MLP, la Table \ref{params_ada} liste les paramètres testés et la Figure \ref{adaboost_depth} montre l'évolution du score en fonction de ces paramètres.
 
-\begin{table}[h]
+\begin{table}
 \centering
 \begin{tabular}{ll}
 paramètre & ensemble des valeurs testées \\
@@ -415,7 +408,7 @@ paramètre & ensemble des valeurs testées \\
 
 Ici, il y a peu d'interprétations possibles : les paramètres influent peu sur la performance de l'estimateur. Dès lors que les arbres sont suffisamment profonds, qu'il y a assez d'estimateurs agrégés et que le taux d'apprentissage et correct, les résultats sont vite optimaux. La fonction de recherche exhaustive nous a renvoyé la combinaison de paramètres présentée dans la Table \ref{best_params_ada} (pour un \emph{f1-score} moyen maximal de 0,947).
 
-\begin{table}[h]
+\begin{table}
 \centering
 \begin{tabular}{ll}
 paramètre & valeur \\
@@ -434,41 +427,34 @@ paramètre & valeur \\
 \end{figure}
 
 \subsection{SVM}
-L’algorithme du SVM est initialement définis pour la discrimination d’une variable qualitative binaire. Il est à ce titre particulièrement indiqué dans le cas de problèmes linéairement séparables. Or, nous sommes en présences d’un problème à 3 classes. Nous allons donc devoir adapter la méthode générale. Plusieurs adaptations existent. Parmi ces dernières, nous avons considéré les deux suivantes:
 
-\begin{itemize}
+L'algorithme du SVM est initialement défini pour la discrimination d'une variable qualitative binaire. Il est à ce titre particulièrement indiqué dans le cas de problèmes linéairement séparables. Or, nous sommes en présence d'un problème à trois classes. Nous allons donc devoir adapter la méthode générale. Plusieurs adaptations existent. Parmi ces dernières, nous avons considéré les deux suivantes :
 
-\item La méthode \textbf{"One-Versus-the-Rest"} est la plus simple et la plus ancienne des méthodes d'otpimisation indirectes. Il s'agit d'une extension au cas multiclasses proposée par Vapnik\cite{Vapnik}. Elle consiste à construire p classifieurs binaires (à vecteurs de supports) pour classifier p classes. S’il s’agit d’une extension facile à mettre en place, cette méthode risque d’introduire artificiellement un déséquilibre des classes dans la construction des modèles individuels. \\
+\begin{description}
+\item["One-Versus-the-Rest" :] la plus simple et la plus ancienne des méthodes d'otpimisation indirectes. Il s'agit d'une extension au cas multiclasses proposée par Vapnik \cite{Vapnik}. Elle consiste à construire $p$ estimateurs binaires (à vecteurs de supports) pour classifier $p$ classes. S'il s'agit d'une extension facile à mettre en place, cette méthode risque d'introduire artificiellement un déséquilibre des classes dans la construction des modèles individuels.
+\item[Méthode directe de \textbf{Crammer et Singer} \cite{Crammer} :] contrairement aux schémas de décomposition indirect (comme la méthode "OVR", cette approche consiste à séparer les classes en résolvant un unique problème d'optimisation. Ainsi, cela revient à résoudre un problème d'optimisation à $(p-1)\times n$ contraintes (où $p$ est le nombre de classe et $n$ le nombre d'observations).
+\end{description}
+Comme pour les méthodes précédentes, la Table \ref{params_svm} liste les paramètres testés.
 
-
-\medskip
-\item Méthode directe de \textbf{Crammer et Singer}\cite{Crammer}: Contrairement aux schémas de décomposition indirect (comme la méthode ‘OVR”, cette approche consiste à séparer les classes en résolvant un unique problème d’optimisation.Ainsi, cela revient à résoudre un problème d’optimisation à (p-1).n contraintes (où p est le nombre de classe et n le nombre d’observations).
-\end{itemize}
-
-\bigskip
-Comme pour les méthodes précédentes, la table\ref{params_svm} liste les paramètres testés
-
-\begin{table}[h]
+\begin{table}
 \centering
 \begin{tabular}{ll}
 paramètre & ensemble des valeurs testées \\
 \hline
-
-\texttt{multi\_class} & ‘ovr’ , ‘crammer\_singer’ \\
+\texttt{multi\_class} & \texttt{'ovr'}, \texttt{'crammer\_singer'} \\
 \texttt{C} & $\{10^k \>\> | \>\> k \in [\![-2, 3]\!] \}$ \\
-\texttt{tol} & $\{10^-k \>\> | \>\> k \in [\![3, 6]\!] \}$ \\
+\texttt{tol} & $\{10^{-k} \>\> | \>\> k \in [\![3, 6]\!] \}$ \\
 \end{tabular}
-
 \caption{Liste des paramètres testés pour SVM\label{params_svm}}
 \end{table}
 
-Nous noterons que pour tous les essais, LinearSVC a eu pour paramètres:
-\begin{center}
-penalty='l1',dual=False
+\noindent Nous noterons que pour tous les essais, \texttt{LinearSVC} a eu pour paramètres \begin{center}
+\texttt{penalty='l1'} et \texttt{dual=False}
 \end{center}
-En effet, comme nous avons trois classes pour deux caractéristiques de sélection, il est plus performant de résoudre le problème primal (par défaut, le dual est séléctionné). De plus, GridsearchCV ne permet pas la combinaison du  Nous avons eu comme le meilleur résultat avec la combinaison des paramètres suivants:
+En effet, comme nous avons trois classes pour deux caractéristiques de sélection, il est plus performant de résoudre le problème primal (par défaut, le dual est sélectionné). De plus, \texttt{GridsearchCV} ne permet pas la combinaison du %TODO : finir phrase
 
-\begin{table}[h]
+Nous avons obtenu le meilleur résultat avec la combinaison des paramètres suivants présentée dans la Table \ref{best_params_svm}.
+\begin{table}
 \centering
 \begin{tabular}{ll}
 paramètre & valeur \\
@@ -479,16 +465,12 @@ paramètre & valeur \\
 \end{tabular}
 \caption{Paramètres optimaux pour SVM\label{best_params_svm}}
 \end{table}
-
-Pour ces paramètres, nous obtenons la matrice de confusion suivante:
+Pour ces paramètres, nous obtenons la matrice de confusion suivante :
 $$\begin{bmatrix}
 2836 & 1 \\ 
 400 & 86 \\
 \end{bmatrix}$$
-
 Il faut tout de même noter que ces résultats sont sujets à des fortes variations.
-
-
 
 \section{Étude comparative des performances}
 
@@ -544,5 +526,11 @@ Cette fonction est autonome et portable; elle ne nécessite qu'un fichier conten
 \bibitem{Crammer}
 Crammer, K., Singer, Y.: On the algorithmic implementation of multiclass kernel-based vector machines. J. Mach. Learn. Res. 2, 265–292 (2001)
 \end{thebibliography}
+
+\listoffigures
+\begingroup
+\let\clearpage\relax
+\listoftables
+\endgroup
 
 \end{document}

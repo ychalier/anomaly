@@ -1,0 +1,9 @@
+\select@language {french}
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {2.1}{\ignorespaces R\IeC {\'e}gions de d\IeC {\'e}cision manuelles pour des dimensions de voitures}}{4}{figure.2.1}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces \IeC {\'E}volution du score pour MLP selon la fonction d'activation}}{11}{figure.3.1}
+\contentsline {figure}{\numberline {3.2}{\ignorespaces \IeC {\'E}volution du score pour MLP selon l'algorithme de descente du gradient}}{12}{figure.3.2}
+\contentsline {figure}{\numberline {3.3}{\ignorespaces \IeC {\'E}volution du score pour AdaBoost selon la profondeur maximale de l'arbre de d\IeC {\'e}cision}}{14}{figure.3.3}
+\addvspace {10\p@ }
