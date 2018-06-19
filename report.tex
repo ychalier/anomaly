@@ -14,12 +14,16 @@
 
 \usepackage{enumerate}
 
+
 \title{Détection d'anomalies de classification dans l'IoT via Machine Learning}
 \author{Antoine Urban, Yohan Chalier}
 \date{\today}
 
 \renewcommand{\arraystretch}{1.2}
-
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.2]{img/logo_TPT.png}
+\end{figure}
 \begin{document}
 
 \begin{titlepage}
@@ -33,7 +37,7 @@
 	\vspace{2cm}
 	{\Large\itshape Antoine Urban, Yohan Chalier \par}
 	\vfill
-	encadré par\par
+	encadrés par\par
 	Jean-Philippe \textsc{Monteuuis}\par
 	Houda \textsc{Labiod}
 	\vfill
@@ -68,12 +72,12 @@ Tout travail sur l'analyse d'obstacles nécessite la détection préalable de r�
 \section*{Objectifs}
 A travers un cas simple, nous cherchons à vérifier l'appartenance d'un objet à une classe (e.g. un véhicule) en utilisant un algorithme de machine learning et les dimensions de l'objet. Il s'agit donc de proposer un modèle de classification multi-classes en réalisant un classeur à partir d'un algorithme d'apprentissage supervisé. 
 Au préalable, nous nous assurons de trouver des bases de données avec les dimensions pour chacune des classes pour entraîner et valider notre modèle. 
-Ensuite, nous proposerons une méthodologie de sélection d'un algorithme d'apprentissage supervisé en évaluant leur précision et leur efficacité respectives. Dans ce travail, nous avons considérés les algorithmes (c) suivant: 
+Ensuite, nous proposerons une méthodologie de sélection d'un algorithme d'apprentissage supervisé en évaluant leur précision et leur efficacité respectives. Dans ce travail, nous avons considérés les algorithmes suivant: 
 \begin{itemize}
-\item Réseau de Neurones (c = 1) ;
-\item Adaboost (c = 2) ;
-\item SVM (c = 3) ;
-\item Random Forest (c = 4).
+\item Réseau de Neurones;
+\item Adaboost;
+\item SVM;
+\item Random Forest.
 \end{itemize}
 
 ~\par
@@ -228,7 +232,7 @@ Pour définir de manière formelle une matrice de confusion, il convient d'intro
 \item FN (Faux négatif): item déclaré négatif alors qu'il était en réalité positif
 \item TN (Vrai négatif): item correctement détecté comme négatif
 \end{itemize}
-
+\medskip
 Ces derniers permettent de définir la classification, correcte ou non, des objets données en entrée de notre fonction. Nous pouvons dès lors construire la matrice suivante : 
 
 \begin{tabular}{ l | l | c | c | c c}
@@ -245,25 +249,61 @@ Ces derniers permettent de définir la classification, correcte ou non, des obje
 \end{tabular}
 
 ~\par
+Les colonnes représentent le nombre d'occurrences d’une classe de référence (ie des observations issues de notre base de données). Les lignes quant à elles le nombre d'occurrences d’une classe estimés par notre modèle de classification. 
+~\par
+\medskip
+Pour illustrer cette terminologie, nous introduisons la matrice de confusion suivante, obtenues en appliquant l’algorithme RandomForest sur notre base de données:
+
+$$\begin{bmatrix}
+2801 & 19 \\ 
+36 & 467 \\
+\end{bmatrix}$$
+
+Ainsi, parmi les 2837 observations positives, 2801 seront estimés comme tels et 36 comme étant négatives. De même, sur les 2820 observations que notre modèle a estimé comme positives, 19 sont en réalité négatives. Le même raisonnement s’applique pour les observations négatives. 
+
 
 Pour la suite, et pour comprendre cette matrice, il convient d'introduire les résultats suivants:
 
 \begin{itemize}\setlength{\itemsep}{1.5mm}
-\item ratio de vrai positif: $TPR=\dfrac{TP}{TP+FN}$
-\item ratio de vrai négatif: $TNR=\dfrac{TN}{TN+FP}$
-\item ratio de vrai positif: $TPR=\dfrac{TP}{TP+FN}$
-\item ratio de vrai négatif: $TNR=\dfrac{TN}{TN+FP}$
-\item ratio de faux positif: $FPR=\dfrac{FP}{TP+TN}$
-\item ratio de faux négatif: $FNR=\dfrac{FN}{TP+FN}$
-\item valeur prédictive positive: $PPV=\dfrac{TP}{TP+FP}$
-\item valeur prédictive négative: $NPV=\dfrac{TN}{TN+FN}$
-\item taux de fausses découvertes: $TPR=\dfrac{FP}{TP+FP}$
-\item taux de fausses omissions: $FOR=\dfrac{FN}{TN+FN}$
+\item ratio de vrai positif: $TPR=\dfrac{TP}{TP+FN}=0.987$  (true positive rate)\\
+
+Ce ratio montre la capacité de notre modèle à détecter tous les valeurs positives. Ici, cette détection est très efficace. Néanmoins, il est important de noter que nous pouvons facilement avoir un très bon TPR en prédisant systématiquement "positif". Cette valeur doit donc s’interpréter avec celle du TNR. 
+
+\item ratio de vrai négatif: $TNR=\dfrac{TN}{TN+FP} = 0.959$ (True negative rate)\\
+
+Aussi appelé sensibilité. Mesure la capacité de notre modèle à détecter les valeurs négatives. De la même manière que pour le TPR, on peut facilement avoir un très bon TNR en prédisant systématiquement négatif. Ici, la valeur importante combinée à celle du TPR renforce la performance du modèle.
+
+\item ratio de faux positif: $FPR=\dfrac{FP}{TP+TN}=0.04$ (False positive rate)\\
+
+Ce ratio décrit en quelque sorte la probabilité de fausse alarme. 
+
+\item ratio de faux négatif: $FNR=\dfrac{FN}{TP+FN}=0.01 $ (False negative rate)\\
+
+Décrit en quelque sorte le ratio de mauvaise classification des items positifs. Un taux égal à 1 signifierait que 100% des items positifs ont été déclaré négatifs. On remarque que notre modèle classifie avec efficacité les items positifs.
+
+\item valeur prédictive positive: $PPV=\dfrac{TP}{TP+FP}=0.993$  (positive predicted value)\\
+
+Une PPV importante signifie qu’un item marqué positif est réellement positif (il y a un faible nombre de faux positifs). 
+
+\item valeur prédictive négative: $NPV=\dfrac{TN}{TN+FN}=0.928$ (negative predicted value)\\
+
+A l’inverse du PPV, un NPV important signifie qu’un item marqué négatif est réellement négatif (il y a un faible nombre de faux négatif).
+
+
+\item taux de fausses découvertes: $FDR=\dfrac{FP}{TP+FP}=0.001$   (False discovery rate)\\
+
+Il s’agit du complémentaire de la précision. Un FDR important signifie l’incapacité de notre modèle à détecter les items positifs. 
+
+\item taux de fausses omissions: $FOR=\dfrac{FN}{TN+FN}=0.072$ (False omission rate)\\
+
+Il s’agit du complémentaire du NPV. Un FOR important indique l’incapacité de notre modèle à détecter les items négatifs. 
+
 \end{itemize}
 
 ~\par
 
-Ce mode de représentation permet non seulement de mettre en évidence les erreurs qui sont faites par votre classificateur, mais surtout des types d'erreurs qui sont commises. En effet, l'utilisation de la seule précision peut être trompeuse dans la mesure où le nombre d'observation dans chaque classe est inégale. 
+Ce mode de représentation permet non seulement de mettre en évidence les erreurs qui sont faites par notre classificateur, mais surtout des types d'erreurs (mauvaise détection d’une classe ou surestimation du des items positifs par exemple) qui sont commises. En effet, l’utilisation de la seule “accuracy” peut être trompeuse dans la mesure où le nombre d’observations dans chaque classe est inégale. \\
+\medskip
 Pour illustrer ce phénomène, prenons un exemple précis. Considérons l'algorithme SVM (support vector Machine) avec les paramètres suivants:
 \medbreak
 
@@ -274,8 +314,7 @@ C=0.1, cache--size=200, class--weight=None, coef0=0.0, decision--function--shape
 \end{small}\end{minipage}}
 \end{center}
 \medbreak
-
-La précision de cet algorithme avec ces paramètres est égale à 0.96660 et renvoie la matrice de confusion suivante:
+Cet algorithme renvoie avec notre base de donnée, la matrice de confusion suivante: 
 
 $$\begin{bmatrix}
 2771 & 74 \\ 
@@ -283,10 +322,13 @@ $$\begin{bmatrix}
 \end{bmatrix}$$
 
 \medskip
-Nous remarquons bien que la classification est loin d'être satisfaisante alors que le score de précision est, lui, important. Il y a en effet dans ce dernier aucune pondération. Si une classe contenant un nombre de paramètres important est bien classifiée, elle peut "masquer" les mauvais résultats obtenus pour d'autres classes plus petites.
+L’accuracy est égale à $\dfrac{TP+TN}{Total\_items}= 0.91$
+\medskip
+
+Nous remarquons que 313 items ont mal été classifiés. Dans le cadre d'une classification d'obstacles, cela est loin d'être satisfaisante alors que le score d'accuracy est, lui, relativement important. Il y a en effet dans ce dernier aucune pondération. Si une classe contenant un nombre de paramètres important est bien classifiée, elle peut "masquer" les mauvais résultats obtenus pour d'autres classes plus petites.
 
 \subsubsection{Score F1}
-Comme nous l'avons vu, le taux d'exactitude reste trop général pour correctement caractériser la performance d'une classification. Nous allons donc utiliser une autre métrique: le score F1. Pour ce faire, introduisons deux termes :
+Comme nous l’avons vu, le taux d’accuracy reste trop général pour correctement caractériser la performance d’une classification. En effet, il n’est pas pondéré selon le nombre d’élément de chaque classe ce qui peut induire des erreurs d’appréciation. Nous allons donc utiliser une autre métrique: le score F1. Pour ce faire, introduisons deux termes:
 
 \begin{description}
 \item[La précision :] la précision est le ratio d’observations positives correctement prédites sur le total des observations positives prédites. On a donc : \begin{equation}
@@ -297,7 +339,16 @@ Comme nous l'avons vu, le taux d'exactitude reste trop général pour correcteme
 \end{equation}
 \end{description}
 
-Il est souvent intéressant de comparer deux versions d'un classeur pour déterminer lequel est le plus performant. Une idée intuitive serait de faire la moyenne de la précision et du taux de rappel. Pourtant, dans le cas d'une précision très mauvaise et d'un taux de rappel très élevé, nous pouvons rapidement arriver à une mauvaise estimation de la performance de notre algorithme. C'est pour cette raison que nous introduisons une nouvelle métrique: \textbf{le score F1}. Elle est définie comme étant la moyenne harmonique de la précision et du taux de rappel. On a donc:
+Il est souvent intéressant de comparer deux versions d'un classeur pour déterminer lequel est le plus performant. Une idée intuitive serait de faire la moyenne de la précision et du taux de rappel. Pourtant cette idée est loin d’être la meilleure. Considérons par exemple deux cas:
+\begin{itemize}
+
+\item Cas 1: Taux de rappel élevé, faible précision: Cela signifie que la plupart des exemples positifs sont correctement reconnus (FN faible) mais il y a beaucoup de faux positifs.
+
+\item Cas 2: Faible taux de rappel, haute précision: Cela montre que nous manquons beaucoup d’items positifs (FN élevé) mais ceux que nous pronostiquons positifs le sont en effet (FP faible)
+\end{itemize}
+
+\medskip
+Ainsi, dans le cas d'une précision très mauvaise et d'un taux de rappel très élevé (ou inversement), nous pouvons rapidement arriver à une mauvaise estimation de la performance de notre algorithme. C'est pour cette raison que nous introduisons une nouvelle métrique: \textbf{le score F1}. Elle est définie comme étant la moyenne harmonique de la précision et du taux de rappel. On a donc:
 \begin{equation}
 	\text{f1-score} = \dfrac{2\times(\text{Recall} \times \text{Precision})}{(\text{Recall} + \text{Precision})} = 2\times\dfrac{PPV \times TPR}{PPV + TPR}
 \end{equation}
@@ -372,7 +423,7 @@ L'exploitation des résultats est rendue très difficile par le manque de consis
 \item la tangente hyperbolique comme fonction d'activation
 \item \emph{lbfgs} comme méthode du gradient (la documentation de sklearn prédit cette préférence lorsqu'il y a peu de données à exploiter)
 \end{itemize}
-Enfin, la Table \ref{best_params_mlp} donne les résultats donnés par la recherche exhaustive et validation croisée.
+Enfin, la Table \ref{best_params_mlp} donne les résultats donnés par la recherche exhaustive et validation croisée (pour un \emph{f1-score} moyen maximal de 0.937).
 
 \begin{table}
 \centering
@@ -408,7 +459,7 @@ paramètre & ensemble des valeurs testées \\
 
 Ici, il y a peu d'interprétations possibles : les paramètres influent peu sur la performance de l'estimateur. Dès lors que les arbres sont suffisamment profonds, qu'il y a assez d'estimateurs agrégés et que le taux d'apprentissage et correct, les résultats sont vite optimaux. La fonction de recherche exhaustive nous a renvoyé la combinaison de paramètres présentée dans la Table \ref{best_params_ada} (pour un \emph{f1-score} moyen maximal de 0,947).
 
-\begin{table}
+\begin{table}[h]
 \centering
 \begin{tabular}{ll}
 paramètre & valeur \\
@@ -420,7 +471,7 @@ paramètre & valeur \\
 \caption{Paramètres optimaux pour AdaBoost\label{best_params_ada}}
 \end{table}
 
-\begin{figure}
+\begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{img/adaboost_depth.png}
 \caption{Évolution du score pour AdaBoost selon la profondeur maximale de l'arbre de décision\label{adaboost_depth}}
@@ -436,7 +487,7 @@ L'algorithme du SVM est initialement défini pour la discrimination d'une variab
 \end{description}
 Comme pour les méthodes précédentes, la Table \ref{params_svm} liste les paramètres testés.
 
-\begin{table}
+\begin{table}[h]
 \centering
 \begin{tabular}{ll}
 paramètre & ensemble des valeurs testées \\
@@ -454,7 +505,7 @@ paramètre & ensemble des valeurs testées \\
 En effet, comme nous avons trois classes pour deux caractéristiques de sélection, il est plus performant de résoudre le problème primal (par défaut, le dual est sélectionné). De plus, \texttt{GridsearchCV} ne permet pas la combinaison du %TODO : finir phrase
 
 Nous avons obtenu le meilleur résultat avec la combinaison des paramètres suivants présentée dans la Table \ref{best_params_svm}.
-\begin{table}
+\begin{table}[h]
 \centering
 \begin{tabular}{ll}
 paramètre & valeur \\
@@ -501,9 +552,11 @@ Cette fonction est autonome et portable; elle ne nécessite qu'un fichier conten
 
 \chapter{Conclusions}
 
-\begin{center}
-   \includegraphics[width=\textwidth]{MLFramework.pdf}
-\end{center}
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{img/structure.png}
+\caption{Schématisation du fonctionnement global du détecteur}
+\end{figure}
 
 
 \begin{thebibliography}{9}
