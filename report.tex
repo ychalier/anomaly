@@ -76,6 +76,7 @@ Dans ce travail, nous nous concentrerons sur les trois types d'obstacles les plu
 
 Tout travail sur l'analyse d'obstacles nécessite la détection préalable de régions d'intérêt en utilisant par exemple la méthode du "point-in-polygon"\cite{ref1}, ou encore à l'aide de capteurs à ultrasons et d'analyse de signal\cite{ref2}.Ce travail n’a pas comme objectif de revenir sur l’utilisation de ces techniques, mais se concentrera sur l’analyse à posteriori des dimensions ainsi collectées avec pour but de proposer une classification efficace. La figure \ref{data_flow} suivante récapitule le flot de données dans un véhicule autonome. Comme nous pouvons le voir, en collectant les données des capteurs et provenant des véhicules alentoures, le travail de classification (ou “perception”) permet la modélisation de l’environnement et de déterminer le comportement du véhicule. 
 
+\medskip
 
 \begin{figure}[h]
 	\centering
@@ -105,6 +106,12 @@ Si un attaquant envoie un nombre important de messages à la victime, cela peut 
 \end{enumerate}
 
 \section*{Travaux connexes}
+Le sujet de la détection et de la classification d’obstacle fait l’objet de nombreux travaux de recherche, tant leurs résultats sont nécessaires pour le bon fonctionnement des objets autonomes. Ainsi, plusieurs méthodes utilisant diverses techniques ont été développé. Si certains\cite{work1} utilisent la vitesse relative des objets pour détecter, suivre et reconnaître des séquences d’images, d’autres\cite{work2} ont basé leur méthode d’extraction sur la reconnaissance de contours utilisant les techniques HOG(Histogram of Oriented Gradients) et SURF (Speeded-Up Robust Features). Ces techniques ont en commun d’utiliser les algorithmes d’apprentissage supervisé (à savoir SVM et des réseaux de neurones) pour leur classification.\\
+Des chercheurs ont également travaillé à s’adapter au maximum à l’environnement urbain, où le trafic peut provenir de directions arbitraires. En d’autre terme, la majorité des modèle sont performants sur du trafic autoroutiers mais se dégradent dans des situations urbaines.  Ainsi, Darms, Rybski et Baker proposent\cite{work3} une méthode de suivi qui vise à prendre en compte la dimension dynamique de l'environnement extérieur.
+\\
+Enfin, contrairement aux techniques citées jusqu’alors qui utilisent des techniques de classification, des chercheurs\cite{work4} ont également proposé un modèle de régression en cascade pour l’analyse de trafic issues de vidéos autoritaire.  
+
+
 
 
 \section*{Objectifs}
@@ -359,8 +366,11 @@ $$\begin{bmatrix}
 239 & 239 \\
 \end{bmatrix}$$
 
-\medskip
-L’accuracy est égale à $\dfrac{TP+TN}{Total\_items}= 0.91$
+\bigskip
+L’accuracy est égale à:\\
+\begin{equation}
+ accuracy=\dfrac{TP+TN}{\text{Total items}}= 0.91
+\end{equation}
 \medskip
 
 Nous remarquons que 313 items ont mal été classifiés. Dans le cadre d'une classification d'obstacles, cela est loin d'être satisfaisante alors que le score d'accuracy est, lui, relativement important. Il y a en effet dans ce dernier aucune pondération. Si une classe contenant un nombre de paramètres important est bien classifiée, elle peut "masquer" les mauvais résultats obtenus pour d'autres classes plus petites.
@@ -369,10 +379,10 @@ Nous remarquons que 313 items ont mal été classifiés. Dans le cadre d'une cla
 Comme nous l’avons vu, le taux d’accuracy reste trop général pour correctement caractériser la performance d’une classification. En effet, il n’est pas pondéré selon le nombre d’élément de chaque classe ce qui peut induire des erreurs d’appréciation. Nous allons donc utiliser une autre métrique: le score F1. Pour ce faire, introduisons deux termes:
 
 \begin{description}
-\item[La précision :] la précision est le ratio d’observations positives correctement prédites sur le total des observations positives prédites. On a donc : \begin{equation}
+\item[La précision :] la précision est le ratio d’observations positives correctement prédites sur le total des observations positives prédites. Une précision importante signifie qu’un item marqué positif l'est réellement. On a donc : \begin{equation}
 \text{Precision} = \dfrac{TP}{TP+FP}
 \end{equation}
-\item[Le taux de rappel :] le taux de rappel est le ratio d'observations positives correctement prédites sur le total des observations de cette classe. On a donc: \begin{equation}
+\item[Le taux de rappel :] le taux de rappel montre la capacité de notre modèle à détecter tous les valeurs positives. On a: \begin{equation}
 \text{Recall} = \dfrac{TP}{TP+FN}
 \end{equation}
 \end{description}
@@ -621,6 +631,19 @@ Illusion and Dazzle: Adversarial Optical Channel Exploits against Lidars for Aut
 
 \bibitem{Crammer}
 Crammer, K., Singer, Y.: On the algorithmic implementation of multiclass kernel-based vector machines. J. Mach. Learn. Res. 2, 265–292 (2001)
+
+\bibitem{work1}
+Mourad Bendjaballah, Stevica Graovac and Mohammed Amine Boulahlib, A classification of on-road obstacles according to their relative velocities, EURASIP Journal on Image and Video Processing (2016) 
+
+\bibitem{work2}
+Danil V. Prokhorov, Road obstacle classification with attention windows,2010 IEEE Intelligent Vehicles Symposium
+
+\bibitem{work3}
+Michael S. Darms, Paul E. Rybski, Christopher Baker, and Chris Urmson, Obstacle Detection and Tracking for the Urban Challenge, IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 10, NO. 3, SEPTEMBER 2009
+
+\bibitem{work4}
+Liang, Mingpei, et al. "Counting and classification of highway vehicles by regression analysis." IEEE Transactions on Intelligent Transportation Systems 16.5 (2015): 2878-2888.
+
 \end{thebibliography}
 
 \listoffigures
