@@ -48,14 +48,20 @@
 
 
 \begin{abstract}
-Dans le contexte de l'internet des objets, les messages peuvent contenir de fausses informations générées par un utilisateur authentifié. Par conséquence, les mécanismes de sécurité reposant sur le chiffrement et la signature sont inutiles face à ces attaques. Les algorithmes reposant sur l'apprentissage machine (Machine Learning) permet de classer si un objet  émettant des données est malicieux ou non. 
+Dans le contexte de l'internet des objets, les messages peuvent contenir de fausses informations générées par un utilisateur authentifié. Par conséquence, les mécanismes de sécurité reposant sur le chiffrement et la signature des messages sont inefficaces face à ces attaques. Les classeurs basés reposant sur l'apprentissage machine (Machine Learning) permettent de classer si un objet  émettant des données est malicieux ou non. 
 \end{abstract}
 
 \chapter{Introduction}
 
-L'exercice de la conduite est synonyme de changements constant. Ainsi, lorsque nous conduisons, notre attention est tout entière consacré à notre environnement, car notre sécurité est celle des personnes qui nous entourent sont en jeu. Nous prêtons ainsi naturellement une attention toute particulière aux obstacles qui peuvent surgir, qu'il s'agisse tout simplement d'autres voitures partageant la route, des piétons ou encore des motocyclistes. 
+L’exercice de la conduite est synonyme de changements constants. Ainsi, lorsque nous conduisons, notre attention est tout entière consacré à notre environnement, car notre sécurité est celle des personnes qui nous entourent sont en jeu. Nous prêtons une attention particulière aux obstacles qui peuvent surgir, qu’il s’agisse tout simplement d’autres voitures partageant la route, des piétons ou encore des motocyclistes. 
 
-Pendant longtemps fantasmés, les véhicules autonomes deviennent aujourd'hui réalité, grâce à l' incroyable progrès réalisé dans les domaines de l'intelligence artificielle et du développement de capteurs. Si ces processus visent à remplacer le conducteur humain, il semble naturel qu'ils prêtent la même attention aux obstacles. Les méthodes utilisées se doivent d'être fiables et performante, car en matière de sécurité, le droit à l'erreur n'existe pas.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{img/sensors.png}
+	\caption{Ensemble des capteurs présents dans le véhicule\label{sensors}}
+\end{figure}
+
+Longtemps objets fantasmés, les véhicules autonomes sont aujourd’hui réalités grâce aux incroyables progrès réalisés dans les domaines de l’intelligence artificielle et du développement de capteurs. Si ces processus visent à remplacer le conducteur humain, il semble naturel qu’ils prêtent la même attention aux obstacles. L’image \ref{sensors} présente la complexité introduite dans ce nouvel environnement. Un nombre important de capteurs est en effet nécessaire pour avoir une vue complète du contexte extérieur. Cela comprend à la fois des communications Véhicule-à-Véhicule et l’analyse des données des capteurs.
 
 ~\par
 
@@ -66,8 +72,40 @@ Dans ce travail, nous nous concentrerons sur les trois types d'obstacles les plu
 \item un piéton.
 
 \end{itemize}
+\medskip
 
-Tout travail sur l'analyse d'obstacles nécessite la détection préalable de régions d'intérêt en utilisant par exemple la méthode du "point-in-polygon"\cite{ref1}, ou encore à l'aide de capteurs à ultrasons et d'analyse de signal\cite{ref2}. Ce travail n'a pas comme objectif de revenir sur l'utilisation de ces techniques, mais se concentrera sur l'analyse à posteriori des dimensions ainsi collectées avec pour but de proposer une classification efficace. 
+Tout travail sur l'analyse d'obstacles nécessite la détection préalable de régions d'intérêt en utilisant par exemple la méthode du "point-in-polygon"\cite{ref1}, ou encore à l'aide de capteurs à ultrasons et d'analyse de signal\cite{ref2}.Ce travail n’a pas comme objectif de revenir sur l’utilisation de ces techniques, mais se concentrera sur l’analyse à posteriori des dimensions ainsi collectées avec pour but de proposer une classification efficace. La figure \ref{data_flow} suivante récapitule le flot de données dans un véhicule autonome. Comme nous pouvons le voir, en collectant les données des capteurs et provenant des véhicules alentoures, le travail de classification (ou “perception”) permet la modélisation de l’environnement et de déterminer le comportement du véhicule. 
+
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{img/data_flow.png}
+	\caption{Flux de données\label{data_flow}}
+\end{figure}
+
+\section*{Attaques}
+Comme nous l’avons vu grâce aux figures \ref{sensors} et \ref{data_flow}, le nombre important de capteurs et la collecte de messages provenant de véhicules rendent la surface d’attaque importante. Cette section a pour objectif de décrire les plus importantes.
+
+\begin{enumerate}\setlength{\itemsep}{1.5mm}
+\item Attaque par aveuglement des capteurs (Blinding attack)\\La présence de capteurs optiques rend possible une attaque par aveuglement. Dans ce schéma\cite{blinding}, un attaquant utilise un laser pour aveugler ces capteurs ce qui a pour conséquence une mauvaise perception de l’environnement. De ce fait, la victime pourra freiner ou dévier de sa trajectoire et ainsi provoquer un accident. 
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{img/blinding.png}
+	\caption{Attaque par aveuglement\label{blinding}}
+\end{figure}
+
+\item Attaque par modification\\
+
+Un attaquant peut envoyer des faux messages à la victime. Cela aura pour conséquence de causer une fausse perception de l'environnement et incidemment créer un accident.
+
+\item Attaque par déni de service
+Si un attaquant envoie un nombre important de messages à la victime, cela peut avoir pour conséquence de saturer ses capacités de traitement. Ainsi, la victime ne pourra plus traiter correctement les messages non malicieux. 
+
+\end{enumerate}
+
+\section*{Travaux connexes}
+
 
 \section*{Objectifs}
 A travers un cas simple, nous cherchons à vérifier l'appartenance d'un objet à une classe (e.g. un véhicule) en utilisant un algorithme de machine learning et les dimensions de l'objet. Il s'agit donc de proposer un modèle de classification multi-classes en réalisant un classeur à partir d'un algorithme d'apprentissage supervisé. 
@@ -82,7 +120,7 @@ Ensuite, nous proposerons une méthodologie de sélection d'un algorithme d'appr
 
 ~\par
 
-\noindent L'Algorithme \ref{alg:prediction} permet de résumer le déroulé du processus de prédiction.
+\noindent Le pseudo code \ref{alg:prediction} permet de résumer le déroulé du processus de prédiction.
 
 \RestyleAlgo{boxruled}
 \begin{algorithm}[h]
@@ -502,7 +540,7 @@ paramètre & ensemble des valeurs testées \\
 \noindent Nous noterons que pour tous les essais, \texttt{LinearSVC} a eu pour paramètres \begin{center}
 \texttt{penalty='l1'} et \texttt{dual=False}
 \end{center}
-En effet, comme nous avons trois classes pour deux caractéristiques de sélection, il est plus performant de résoudre le problème primal (par défaut, le dual est sélectionné). De plus, \texttt{GridsearchCV} ne permet pas la combinaison du %TODO : finir phrase
+En effet, comme nous avons trois classes pour deux caractéristiques de sélection, il est plus performant de résoudre le problème primal (par défaut, le dual est sélectionné). De plus, \texttt{GridsearchCV} ne permet pas la combinaison de la résolution du problème primal et de la norme 2 comme fonction de pénalisation. %TODO : finir phrase
 
 Nous avons obtenu le meilleur résultat avec la combinaison des paramètres suivants présentée dans la Table \ref{best_params_svm}.
 \begin{table}[h]
@@ -515,7 +553,8 @@ paramètre & valeur \\
 \texttt{tol} & 0.00001\\
 \end{tabular}
 \caption{Paramètres optimaux pour SVM\label{best_params_svm}}
-\end{table}
+\end{table}\\
+
 Pour ces paramètres, nous obtenons la matrice de confusion suivante :
 $$\begin{bmatrix}
 2836 & 1 \\ 
@@ -560,6 +599,10 @@ Cette fonction est autonome et portable; elle ne nécessite qu'un fichier conten
 
 
 \begin{thebibliography}{9}
+\bibitem{blinding}
+Hocheol Shin, Dohyun Kim, Yujin Kwon, and Yongdae Kim
+Illusion and Dazzle: Adversarial Optical Channel Exploits against Lidars for Automotive Applications, Korea Advanced Institute of Science and Technology 
+
 \bibitem{ref1}
           Deepika, N AND Sajith Variyar, V. V.,
           Obstacle classification and detection for vision based navigation for autonomous driving,
