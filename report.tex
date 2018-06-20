@@ -149,15 +149,21 @@ Ensuite, nous proposerons une méthodologie de sélection d'un algorithme d'appr
 
 \subsection{Objectif}
 
-En premier lieu, nous souhaitions commencer par une vision globale des données et du travail à effectuer. Nous disposions d'une base de données contenant des mesures de voiture, provenant de \href{http://www.carqueryapi.com}{CarQuery}, et contenant 54808 lignes complètes. Dans cette partie, nous allons nous efforcer d'obtenir une première fonction de classification se basant sur des critères très simple : des régions de décision rectangulaires et arbitraires.
+En premier lieu, nous souhaitions commencer par une vision globale des données et du travail à effectuer. Dans cette partie, nous allons nous efforcer d'obtenir une première fonction de classification se basant sur des critères très simples (les extremums de largeur et de longueur) : des régions de décision rectangulaires et arbitraires.
 
 \subsection{Mise en {\oe}uvre}
 
-Puisque l'objectif de cette étude est la détection d'anomalies dans la mesure de longueur et de largeur, nous avons extrait les deux colonnes correspondantes dans une DataFrame du module \href{http://pandas.pydata.org}{Pandas}, en Python.
+L'objectif de cette étude est la détection d'anomalies dans la mesure de longueur et de largeur. Nous disposions d'une base de données contenant des mesures de voiture, provenant de CarQuery \cite{carquery}. Nous avons extrait les deux colonnes de largeur et longueur dans une DataFrame du module d'analyse de données, Pandas \cite{pandas}, en Python.
 
-Après un premier affichage des données, il est apparu que beaucoup de points apparaissaient en plusieurs fois, aussi la séparation de la base de données en points uniques et points non-uniques se révéla pertinente. Cela permit de réduire le nombre de lignes à 5026.
+Après un premier affichage des données (Figure \ref{first_plot}), il est apparu que beaucoup de points apparaissaient en plusieurs fois, aussi la séparation de la base de données en points uniques et points non-uniques se révéla pertinente. Cela permit de réduire le nombre de lignes à de 54808 à 5026, soit un facteur dix (Figure \ref{screen_shape}).
 
-Manuellement, nous avons alors défini des zones simples (rectangulaires) en tant que régions de décision (Table \ref{regions_decision_manuelles_valeurs}). Ces zones ont été définies au jugé, afin d'encadrer le plus de points valides sans toutefois englober une zone de l'espace trop large.
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{img/screen_shape.png}
+\caption{Capture d'écran du nombre de lignes avant et après élagage\label{screen_shape}}
+\end{figure}
+
+Manuellement, nous avons alors défini des zones simples (rectangulaires) en tant que régions de décision de la plausibilité des dimensions des véhicules (Table \ref{regions_decision_manuelles_valeurs}). Ces zones ont été définies au jugé, afin d'encadrer le plus de points valides sans toutefois englober une zone de l'espace trop large. Une approche pour déterminer ces seuils peut être l'utilisation des records de taille enregistrés au cours de l'histoire.
 
 \begin{table}[h]
 \centering
@@ -171,9 +177,7 @@ gris & malicieux & 5,25 à 6,5 mètres & 1,4 à 1,65 mètres \\
 \caption{Dimensions des régions de décision arbitraires\label{regions_decision_manuelles_valeurs}}
 \end{table}
 
-%TODO Parler des records de taille
-
-Hors de la zone verte, et dans les deux cadres gris, nous avons alors généré aléatoirement 700 points définis comme malicieux. La Figure \ref{regions_decision_manuelles_plot} représente l'affichage de tous les points décrits plus tôt ainsi que des régions de décision. Ainsi faite, notre classification possède, sur le jeu d'entraînement, une précision de 97,57\%.
+Hors de la zone verte, et dans les deux cadres gris, nous avons alors généré aléatoirement 700 points définis comme malicieux. La Figure \ref{regions_decision_manuelles_plot} représente l'affichage de tous les points décrits plus tôt ainsi que des régions de décision. Ainsi faite, notre classification possède, sur le jeu d'entraînement, une précision de 97,83\%, et une précision de 97,31\%. Ces scores peuvent sembler suffisants, mais les régions de décisions montrées dans la Figure \ref{regions_decision_manuelles_plot} montrent qu'il y a des zones mortes (par exemple, pour une largeur supérieure à 2,1 mètres et une longueur supérieure à 5 mètres, dans lesquelles un attaquant pourrait positionner ses points malicieux. Ce modèle présente donc de l'\emph{underfitting}.
 
 \begin{figure}
 \centering
@@ -182,6 +186,8 @@ Hors de la zone verte, et dans les deux cadres gris, nous avons alors généré 
 \end{figure}
 
 \section{Recherche des bases de données}
+
+%TODO 
 
 \section{Environnement de travail}
 
@@ -634,38 +640,37 @@ Cette fonction est autonome et portable; elle ne nécessite qu'un fichier conten
 \begin{thebibliography}{9}
 \bibitem{blinding}
 Hocheol Shin, Dohyun Kim, Yujin Kwon, and Yongdae Kim
-Illusion and Dazzle: Adversarial Optical Channel Exploits against Lidars for Automotive Applications, Korea Advanced Institute of Science and Technology 
+\textit{Illusion and Dazzle: Adversarial Optical Channel Exploits against Lidars for Automotive Applications}, Korea Advanced Institute of Science and Technology 
 
 \bibitem{ref1}
-          Deepika, N AND Sajith Variyar, V. V.,
-          Obstacle classification and detection for vision based navigation for autonomous driving,
-          Addison Wesley, Massachusetts,
-          IEEEl,
-          2017.
-     
+Deepika, N AND Sajith Variyar, V. V., \textit{Obstacle classification and detection for vision based navigation for autonomous driving}, Addison Wesley, Massachusetts, IEEEl, 2017.
          
 \bibitem{ref2}
-          Gerard Gibbs and Huamin Jia and Irfan Madani,
-          Obstacle Detection with Ultrasonic Sensors and Signal Analysis Metrics,
-          Transportation Research Procedia,
-          2017.
+Gerard Gibbs and Huamin Jia and Irfan Madani, \textit{Obstacle Detection with Ultrasonic Sensors and Signal Analysis Metrics}, Transportation Research Procedia, 2017.
+
 \bibitem{Vapnik}
-		Vapnik, V.: Statistical Learning Theory. Wiley, New York (1998).
+Vapnik, V.: \textit{Statistical Learning Theory}. Wiley, New York (1998).
 
 \bibitem{Crammer}
-Crammer, K., Singer, Y.: On the algorithmic implementation of multiclass kernel-based vector machines. J. Mach. Learn. Res. 2, 265–292 (2001)
+Crammer, K., Singer, Y.: \textit{On the algorithmic implementation of multiclass kernel-based vector machines}. J. Mach. Learn. Res. 2, 265–292 (2001)
 
 \bibitem{work1}
-Mourad Bendjaballah, Stevica Graovac and Mohammed Amine Boulahlib, A classification of on-road obstacles according to their relative velocities, EURASIP Journal on Image and Video Processing (2016) 
+Mourad Bendjaballah, Stevica Graovac and Mohammed Amine Boulahlib, \textit{A classification of on-road obstacles according to their relative velocities}, EURASIP Journal on Image and Video Processing (2016) 
 
 \bibitem{work2}
-Danil V. Prokhorov, Road obstacle classification with attention windows, 2010 IEEE Intelligent Vehicles Symposium
+Danil V. Prokhorov, \textit{Road obstacle classification with attention windows}, 2010 IEEE Intelligent Vehicles Symposium
 
 \bibitem{work3}
-Michael S. Darms, Paul E. Rybski, Christopher Baker, and Chris Urmson, Obstacle Detection and Tracking for the Urban Challenge, IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 10, NO. 3, SEPTEMBER 2009
+Michael S. Darms, Paul E. Rybski, Christopher Baker, and Chris Urmson, \textit{Obstacle Detection and Tracking for the Urban Challenge}, IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 10, NO. 3, SEPTEMBER 2009
 
 \bibitem{work4}
-Liang, Mingpei, et al. "Counting and classification of highway vehicles by regression analysis." IEEE Transactions on Intelligent Transportation Systems 16.5 (2015): 2878-2888.
+Liang, Mingpei, et al. \textit{Counting and classification of highway vehicles by regression analysis.} IEEE Transactions on Intelligent Transportation Systems 16.5 (2015): 2878-2888.
+
+\bibitem{carquery}
+CarQuery, The Vehicle Data API \& Database [en ligne]. Disponible sur \url{http://www.carqueryapi.com} [20.06.2018]
+
+\bibitem{pandas}
+pandas, Python Data Analysis Library [en ligne]. Disponible sur \url{http://pandas.pydata.org} [20.06.2018]
 
 \end{thebibliography}
 
@@ -674,5 +679,15 @@ Liang, Mingpei, et al. "Counting and classification of highway vehicles by regre
 \let\clearpage\relax
 \listoftables
 \endgroup
+
+\appendix
+
+\chapter{Figures complémentaires}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{img/first_plot.png}
+\caption{Premier affichage des données\label{first_plot}}
+\end{figure}
 
 \end{document}
