@@ -4,6 +4,7 @@
 \usepackage[francais]{babel}
 
 \usepackage{multirow}
+
 \usepackage{graphicx}
 % \usepackage{algorithmic}
 \usepackage{amsmath}
@@ -13,21 +14,20 @@
 
 \usepackage{enumerate}
 
+
 \title{Détection d'anomalies de classification dans l'IoT via Machine Learning}
 \author{Antoine Urban, Yohan Chalier}
 \date{\today}
 
 \renewcommand{\arraystretch}{1.2}
-
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.2]{img/logo_TPT.png}
+\end{figure}
 \begin{document}
 
 \begin{titlepage}
 	\centering
-	\vspace{1cm}
-	\begin{figure}
-	\centering
-	\includegraphics[scale=0.2]{img/logo_TPT.png}
-	\end{figure}
 	\vspace{1cm}
 	{\scshape\LARGE Télécom ParisTech \par}
 	\vspace{1cm}
@@ -48,20 +48,14 @@
 
 
 \begin{abstract}
-Dans le contexte de l'internet des objets, les messages peuvent contenir de fausses informations générées par un utilisateur authentifié. Par conséquence, les mécanismes de sécurité reposant sur le chiffrement et la signature des messages sont inefficaces face à ces attaques. Les classeurs basés reposant sur l'apprentissage machine (Machine Learning) permettent de classer si un objet émettant des données est malicieux ou non.
+Dans le contexte de l'internet des objets, les messages peuvent contenir de fausses informations générées par un utilisateur authentifié. Par conséquence, les mécanismes de sécurité reposant sur le chiffrement et la signature sont inutiles face à ces attaques. Les algorithmes reposant sur l'apprentissage machine (Machine Learning) permet de classer si un objet  émettant des données est malicieux ou non. 
 \end{abstract}
 
 \chapter{Introduction}
 
-L'exercice de la conduite est synonyme de changements constants. Ainsi, lorsque nous conduisons, notre attention est entièrement consacrée à notre environnement, car notre sécurité et celle des personnes qui nous entourent sont en jeu. Nous prêtons une attention particulière aux obstacles qui peuvent surgir, qu'il s'agisse tout simplement d'autres voitures partageant la route, des piétons ou encore des motocyclistes.
+L'exercice de la conduite est synonyme de changements constant. Ainsi, lorsque nous conduisons, notre attention est tout entière consacré à notre environnement, car notre sécurité est celle des personnes qui nous entourent sont en jeu. Nous prêtons ainsi naturellement une attention toute particulière aux obstacles qui peuvent surgir, qu'il s'agisse tout simplement d'autres voitures partageant la route, des piétons ou encore des motocyclistes. 
 
-\begin{figure}
-	\centering
-	\includegraphics[width=\textwidth]{img/sensors.png}
-	\caption{Ensemble des capteurs présents dans le véhicule\label{sensors}}
-\end{figure}
-
-Longtemps fantasmés, les véhicules autonomes sont aujourd'hui réalité grâce aux incroyables progrès réalisés dans les domaines de l'intelligence artificielle et du développement de capteurs. Si ces processus visent à remplacer le conducteur humain, il semble naturel qu'ils prêtent la même attention aux obstacles. L'image \ref{sensors} présente la complexité introduite dans ce nouvel environnement. Un nombre important de capteurs est en effet nécessaire pour avoir une vue complète du contexte extérieur. Cela comprend à la fois des communications Véhicule-à-Véhicule et l'analyse des données des capteurs.
+Pendant longtemps fantasmés, les véhicules autonomes deviennent aujourd'hui réalité, grâce à l' incroyable progrès réalisé dans les domaines de l'intelligence artificielle et du développement de capteurs. Si ces processus visent à remplacer le conducteur humain, il semble naturel qu'ils prêtent la même attention aux obstacles. Les méthodes utilisées se doivent d'être fiables et performante, car en matière de sécurité, le droit à l'erreur n'existe pas.
 
 ~\par
 
@@ -73,47 +67,12 @@ Dans ce travail, nous nous concentrerons sur les trois types d'obstacles les plu
 
 \end{itemize}
 
-~\par
+Tout travail sur l'analyse d'obstacles nécessite la détection préalable de régions d'intérêt en utilisant par exemple la méthode du "point-in-polygon"\cite{ref1}, ou encore à l'aide de capteurs à ultrasons et d'analyse de signal\cite{ref2}. Ce travail n'a pas comme objectif de revenir sur l'utilisation de ces techniques, mais se concentrera sur l'analyse à posteriori des dimensions ainsi collectées avec pour but de proposer une classification efficace. 
 
-Tout travail sur l'analyse d'obstacles nécessite la détection préalable de régions d'intérêt en utilisant par exemple la méthode du "point-in-polygon" \cite{ref1}, ou encore à l'aide de capteurs à ultrasons et d'analyse de signal \cite{ref2}. Ce travail n'a pas comme objectif de revenir sur l'utilisation de ces techniques, mais se concentrera sur l'analyse à posteriori des dimensions ainsi collectées avec pour but de proposer une classification efficace. La Figure \ref{data_flow} récapitule le flot de données dans un véhicule autonome. Comme nous pouvons le voir, en collectant les données des capteurs et provenant des véhicules aux alentours, le travail de classification (ou "perception") permet la modélisation de l'environnement et de déterminer le comportement du véhicule. 
-
-\begin{figure}
-	\centering
-	\includegraphics[width=.9\textwidth]{img/data_flow.png}
-	\caption{Flux de données\label{data_flow}}
-\end{figure}
-
-\section{Attaques}
-
-Comme nous l'avons vu grâce aux figures \ref{sensors} et \ref{data_flow}, le nombre important de capteurs et la collecte de messages provenant de véhicules rendent la surface d'attaque importante. Cette section a pour objectif de décrire les plus importantes.
-
-\begin{description}\setlength{\itemsep}{1.5mm}
-\item[Attaque par aveuglement des capteurs] La présence de capteurs optiques rend possible une attaque par aveuglement. Dans ce schéma \cite{blinding}, un attaquant utilise un laser pour aveugler ces capteurs ce qui a pour conséquence une mauvaise perception de l'environnement. De ce fait, la victime pourra freiner ou dévier de sa trajectoire et ainsi provoquer un accident. 
-\item[Attaque par modification] Un attaquant peut envoyer des faux messages à la victime. Cela aura pour conséquence de causer une fausse perception de l'environnement et incidemment créer un accident.
-\end{description}
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=\textwidth]{img/blinding.png}
-	\caption{Attaque par aveuglement\label{blinding}}
-\end{figure}
-
-\section{Travaux connexes}
-
-Le sujet de la détection et de la classification d'obstacle fait l'objet de nombreux travaux de recherche, tant leurs résultats sont nécessaires pour le bon fonctionnement des objets autonomes. Ainsi, plusieurs méthodes utilisant diverses techniques ont été développées. Si certains \cite{work1} utilisent la vitesse relative des objets pour détecter, suivre et reconnaître des séquences d'images, d'autres \cite{work2} ont basé leur méthode d'extraction sur la reconnaissance de contours utilisant les techniques HOG (Histogram of Oriented Gradients) et SURF (Speeded-Up Robust Features). Ces techniques ont en commun l'utilisation d'algorithmes d'apprentissage supervisé (à savoir SVM et des réseaux de neurones) pour leur classification.
-
-Des chercheurs ont également travaillé à s'adapter au maximum à l'environnement urbain, où le trafic peut provenir de directions arbitraires. En d'autres termes, la majorité des modèle sont performants sur du trafic autoroutiers mais se dégradent dans des situations urbaines.  Ainsi, Darms, Rybski et Baker proposent \cite{work3} une méthode de suivi qui vise à prendre en compte la dimension dynamique de l'environnement extérieur.
-
-Enfin, contrairement aux techniques citées jusqu'alors qui utilisent des techniques de classification, des chercheurs \cite{work4} ont également proposé un modèle de régression en cascade pour l'analyse de trafic issue de vidéos de surveillance.
-
-\section{Objectifs}
-
-À travers un cas simple, nous cherchons à vérifier l'appartenance d'un objet à une classe (e.g. un véhicule) en utilisant un algorithme de Machine Learning et les dimensions de l'objet. Il s'agit donc de proposer un modèle de classification multi-classes en réalisant un classeur à partir d'un algorithme d'apprentissage supervisé.
-
+\section*{Objectifs}
+A travers un cas simple, nous cherchons à vérifier l'appartenance d'un objet à une classe (e.g. un véhicule) en utilisant un algorithme de machine learning et les dimensions de l'objet. Il s'agit donc de proposer un modèle de classification multi-classes en réalisant un classeur à partir d'un algorithme d'apprentissage supervisé. 
 Au préalable, nous nous assurons de trouver des bases de données avec les dimensions pour chacune des classes pour entraîner et valider notre modèle. 
-
-Ensuite, nous proposerons une méthodologie de sélection d'un algorithme d'apprentissage supervisé en évaluant leur précision et leur efficacité respectives. Dans ce travail, nous avons considéré les algorithmes suivant: 
-
+Ensuite, nous proposerons une méthodologie de sélection d'un algorithme d'apprentissage supervisé en évaluant leur précision et leur efficacité respectives. Dans ce travail, nous avons considérés les algorithmes suivant: 
 \begin{itemize}
 \item Réseau de Neurones;
 \item Adaboost;
@@ -123,7 +82,7 @@ Ensuite, nous proposerons une méthodologie de sélection d'un algorithme d'appr
 
 ~\par
 
-\noindent Le pseudo code \ref{alg:prediction} permet de résumer le déroulé du processus de prédiction.
+\noindent L'Algorithme \ref{alg:prediction} permet de résumer le déroulé du processus de prédiction.
 
 \RestyleAlgo{boxruled}
 \begin{algorithm}[h]
@@ -244,16 +203,16 @@ Comme expliqué précédemment, cette classe stocke les jeux de données utilis�
 \centering
 \begin{tabular}{p{2.3cm} p{3.1cm} p{4.6cm}}
 
-\multirow{6}{*}{Pre-processing}& \multirow{2}{*}{\texttt{clean}} & Étapes 4 et 5 du chargement des bases de données \\
-& \multirow{2}{*}{\texttt{append\_odd\_points}} & Étape 7 du chargement des bases de données \\
-& \multirow{2}{*}{\texttt{format}} & Étapes 8 et 9 du chargement des bases de données \\
+\multirow{6}{*}{Pre-processing}& \multirow{2}{*}{\texttt{clean}} & Étapes 4 et 5 du chargement des données \\
+& \multirow{2}{*}{\texttt{append\_odd\_points}} & Étape 7 du chargement des données \\
+& \multirow{2}{*}{\texttt{format}} & Étapes 8 et 9 du chargement des données \\
 \hline
-& \multirow{2}{*}{\texttt{classify}} & Entraîne un \emph{classeur} et renvoie le score de test\\
+& \multirow{2}{*}{\texttt{classify}} & Entraîne un \emph{classifier} et renvoie le score de test\\
 Interface \par \texttt{sklearn} & \multirow{2}{*}{\texttt{tune\_parameters}} & Trouve le meilleur jeu de paramètres pour un \emph{classifier}\\
 & \multirow{2}{*}{\texttt{predict}} & Fonction finale de prédiction online \\
 \hline
 \multirow{4}{*}{Affichage}& \multirow{2}{*}{\texttt{plot}} & Affiche la matrice de données complètes\\
-& \texttt{plot\_decision\_}\par\texttt{boudaries} & Affiche les régions de décisions d'un \emph{classeur}\\
+& \texttt{plot\_decision\_}\par\texttt{boudaries} & Affiche les régions de décisions d'un \emph{classifier}\\
 
 \end{tabular}
 \caption{Méthodes de la classe \texttt{Detector}\label{methodes_detector}}
@@ -290,76 +249,60 @@ Ces derniers permettent de définir la classification, correcte ou non, des obje
 \end{tabular}
 
 ~\par
-Les colonnes représentent le nombre d'occurrences d'une classe de référence (ie des observations issues de notre base de données). Les lignes quant à elles le nombre d'occurrences d'une classe estimés par notre modèle de classification. 
+Les colonnes représentent le nombre d'occurrences d’une classe de référence (ie des observations issues de notre base de données). Les lignes quant à elles le nombre d'occurrences d’une classe estimés par notre modèle de classification. 
 ~\par
 \medskip
-Pour illustrer cette terminologie, nous introduisons la matrice de confusion suivante, obtenues en appliquant l'algorithme RandomForest sur notre base de données:
+Pour illustrer cette terminologie, nous introduisons la matrice de confusion suivante, obtenues en appliquant l’algorithme RandomForest sur notre base de données:
 
 $$\begin{bmatrix}
 2801 & 19 \\ 
 36 & 467 \\
 \end{bmatrix}$$
 
-Ainsi, parmi les 2837 observations positives, 2801 seront estimés comme tels et 36 comme étant négatives. De même, sur les 2820 observations que notre modèle a estimé comme positives, 19 sont en réalité négatives. Le même raisonnement s'applique pour les observations négatives. 
+Ainsi, parmi les 2837 observations positives, 2801 seront estimés comme tels et 36 comme étant négatives. De même, sur les 2820 observations que notre modèle a estimé comme positives, 19 sont en réalité négatives. Le même raisonnement s’applique pour les observations négatives. 
 
 
 Pour la suite, et pour comprendre cette matrice, il convient d'introduire les résultats suivants:
 
 \begin{itemize}\setlength{\itemsep}{1.5mm}
-\item ratio de vrai positif: $TPR=\dfrac{TP}{TP+FN}=0.987$  (true positive rate)
+\item ratio de vrai positif: $TPR=\dfrac{TP}{TP+FN}=0.987$  (true positive rate)\\
 
-~\par
+Ce ratio montre la capacité de notre modèle à détecter tous les valeurs positives. Ici, cette détection est très efficace. Néanmoins, il est important de noter que nous pouvons facilement avoir un très bon TPR en prédisant systématiquement "positif". Cette valeur doit donc s’interpréter avec celle du TNR. 
 
-Ce ratio montre la capacité de notre modèle à détecter tous les valeurs positives. Ici, cette détection est très efficace. Néanmoins, il est important de noter que nous pouvons facilement avoir un très bon TPR en prédisant systématiquement "positif". Cette valeur doit donc s'interpréter avec celle du TNR. 
-
-\item ratio de vrai négatif: $TNR=\dfrac{TN}{TN+FP} = 0.959$ (True negative rate)
-
-~\par
+\item ratio de vrai négatif: $TNR=\dfrac{TN}{TN+FP} = 0.959$ (True negative rate)\\
 
 Aussi appelé sensibilité. Mesure la capacité de notre modèle à détecter les valeurs négatives. De la même manière que pour le TPR, on peut facilement avoir un très bon TNR en prédisant systématiquement négatif. Ici, la valeur importante combinée à celle du TPR renforce la performance du modèle.
 
-\item ratio de faux positif: $FPR=\dfrac{FP}{TP+TN}=0.04$ (False positive rate)
-
-~\par
+\item ratio de faux positif: $FPR=\dfrac{FP}{TP+TN}=0.04$ (False positive rate)\\
 
 Ce ratio décrit en quelque sorte la probabilité de fausse alarme. 
 
-\item ratio de faux négatif: $FNR=\dfrac{FN}{TP+FN}=0.01 $ (False negative rate)
+\item ratio de faux négatif: $FNR=\dfrac{FN}{TP+FN}=0.01 $ (False negative rate)\\
 
-~\par
+Décrit en quelque sorte le ratio de mauvaise classification des items positifs. Un taux égal à 1 signifierait que 100% des items positifs ont été déclaré négatifs. On remarque que notre modèle classifie avec efficacité les items positifs.
 
-Décrit en quelque sorte le ratio de mauvaise classification des items positifs. Un taux égal à 1 signifierait que 100\% des items positifs ont été déclaré négatifs. On remarque que notre modèle classifie avec efficacité les items positifs.
+\item valeur prédictive positive: $PPV=\dfrac{TP}{TP+FP}=0.993$  (positive predicted value)\\
 
-\item valeur prédictive positive: $PPV=\dfrac{TP}{TP+FP}=0.993$  (positive predicted value)
+Une PPV importante signifie qu’un item marqué positif est réellement positif (il y a un faible nombre de faux positifs). 
 
-~\par
+\item valeur prédictive négative: $NPV=\dfrac{TN}{TN+FN}=0.928$ (negative predicted value)\\
 
-Une PPV importante signifie qu'un item marqué positif est réellement positif (il y a un faible nombre de faux positifs). 
-
-\item valeur prédictive négative: $NPV=\dfrac{TN}{TN+FN}=0.928$ (negative predicted value)
-
-~\par
-
-A l'inverse du PPV, un NPV important signifie qu'un item marqué négatif est réellement négatif (il y a un faible nombre de faux négatif).
+A l’inverse du PPV, un NPV important signifie qu’un item marqué négatif est réellement négatif (il y a un faible nombre de faux négatif).
 
 
-\item taux de fausses découvertes: $FDR=\dfrac{FP}{TP+FP}=0.001$   (False discovery rate)
+\item taux de fausses découvertes: $FDR=\dfrac{FP}{TP+FP}=0.001$   (False discovery rate)\\
 
-~\par
+Il s’agit du complémentaire de la précision. Un FDR important signifie l’incapacité de notre modèle à détecter les items positifs. 
 
-Il s'agit du complémentaire de la précision. Un FDR important signifie l'incapacité de notre modèle à détecter les items positifs. 
+\item taux de fausses omissions: $FOR=\dfrac{FN}{TN+FN}=0.072$ (False omission rate)\\
 
-\item taux de fausses omissions: $FOR=\dfrac{FN}{TN+FN}=0.072$ (False omission rate)
-
-~\par
-
-Il s'agit du complémentaire du NPV. Un FOR important indique l'incapacité de notre modèle à détecter les items négatifs. 
+Il s’agit du complémentaire du NPV. Un FOR important indique l’incapacité de notre modèle à détecter les items négatifs. 
 
 \end{itemize}
 
 ~\par
 
-Ce mode de représentation permet non seulement de mettre en évidence les erreurs qui sont faites par notre classificateur, mais surtout des types d'erreurs (mauvaise détection d'une classe ou surestimation du des items positifs par exemple) qui sont commises. En effet, l'utilisation de la seule “accuracy” peut être trompeuse dans la mesure où le nombre d'observations dans chaque classe est inégale. \\
+Ce mode de représentation permet non seulement de mettre en évidence les erreurs qui sont faites par notre classificateur, mais surtout des types d'erreurs (mauvaise détection d’une classe ou surestimation du des items positifs par exemple) qui sont commises. En effet, l’utilisation de la seule “accuracy” peut être trompeuse dans la mesure où le nombre d’observations dans chaque classe est inégale. \\
 \medskip
 Pour illustrer ce phénomène, prenons un exemple précis. Considérons l'algorithme SVM (support vector Machine) avec les paramètres suivants:
 \medbreak
@@ -378,35 +321,30 @@ $$\begin{bmatrix}
 239 & 239 \\
 \end{bmatrix}$$
 
-\bigskip
-L'accuracy est égale à:
-
-\begin{equation}
- accuracy=\dfrac{TP+TN}{\text{Total items}}= 0.91
-\end{equation}
-
+\medskip
+L’accuracy est égale à $\dfrac{TP+TN}{Total\_items}= 0.91$
 \medskip
 
 Nous remarquons que 313 items ont mal été classifiés. Dans le cadre d'une classification d'obstacles, cela est loin d'être satisfaisante alors que le score d'accuracy est, lui, relativement important. Il y a en effet dans ce dernier aucune pondération. Si une classe contenant un nombre de paramètres important est bien classifiée, elle peut "masquer" les mauvais résultats obtenus pour d'autres classes plus petites.
 
 \subsubsection{Score F1}
-Comme nous l'avons vu, le taux d'accuracy reste trop général pour correctement caractériser la performance d'une classification. En effet, il n'est pas pondéré selon le nombre d'élément de chaque classe ce qui peut induire des erreurs d'appréciation. Nous allons donc utiliser une autre métrique: le score F1. Pour ce faire, introduisons deux termes:
+Comme nous l’avons vu, le taux d’accuracy reste trop général pour correctement caractériser la performance d’une classification. En effet, il n’est pas pondéré selon le nombre d’élément de chaque classe ce qui peut induire des erreurs d’appréciation. Nous allons donc utiliser une autre métrique: le score F1. Pour ce faire, introduisons deux termes:
 
 \begin{description}
-\item[La précision :] la précision est le ratio d'observations positives correctement prédites sur le total des observations positives prédites. Une précision importante signifie qu'un item marqué positif l'est réellement. On a donc : \begin{equation}
+\item[La précision :] la précision est le ratio d’observations positives correctement prédites sur le total des observations positives prédites. On a donc : \begin{equation}
 \text{Precision} = \dfrac{TP}{TP+FP}
 \end{equation}
-\item[Le taux de rappel :] le taux de rappel montre la capacité de notre modèle à détecter tous les valeurs positives. On a: \begin{equation}
+\item[Le taux de rappel :] le taux de rappel est le ratio d'observations positives correctement prédites sur le total des observations de cette classe. On a donc: \begin{equation}
 \text{Recall} = \dfrac{TP}{TP+FN}
 \end{equation}
 \end{description}
 
-Il est souvent intéressant de comparer deux versions d'un classeur pour déterminer lequel est le plus performant. Une idée intuitive serait de faire la moyenne de la précision et du taux de rappel. Pourtant cette idée est loin d'être la meilleure. Considérons par exemple deux cas:
+Il est souvent intéressant de comparer deux versions d'un classeur pour déterminer lequel est le plus performant. Une idée intuitive serait de faire la moyenne de la précision et du taux de rappel. Pourtant cette idée est loin d’être la meilleure. Considérons par exemple deux cas:
 \begin{itemize}
 
 \item Cas 1: Taux de rappel élevé, faible précision: Cela signifie que la plupart des exemples positifs sont correctement reconnus (FN faible) mais il y a beaucoup de faux positifs.
 
-\item Cas 2: Faible taux de rappel, haute précision: Cela montre que nous manquons beaucoup d'items positifs (FN élevé) mais ceux que nous pronostiquons positifs le sont en effet (FP faible)
+\item Cas 2: Faible taux de rappel, haute précision: Cela montre que nous manquons beaucoup d’items positifs (FN élevé) mais ceux que nous pronostiquons positifs le sont en effet (FP faible)
 \end{itemize}
 
 \medskip
@@ -442,7 +380,7 @@ L'étape 3 consiste en l'écriture dans un fichier d'une ligne contenant la desc
 
 En effet, ce fut l'un de nos plus importants problèmes lors de ce projet. Pour le Multi-layered Perceptron, il y avait beaucoup de paramètres en jeu, et la complexité combinatoire mélangée avec le temps de convergence des réseaux neuronaux ont rendu l'exécution du script interminables. Notre plus long essai eut lieu sur le serveur InfRes \href{http://lame10.enst.fr}{lame10} doté pourtant de 80 cpus, sur une durée de plus de 18 heures. Malgré tout, il aura fallut interrompre l'exécution du programme manuellement pour rendre le serveur disponible. Le fichier généré pesait plus de 120Mo, et les deux CSV extraits pèsent respectivement 25Mo et 23Mo.
 
-Enfin, du grand fichier généré contenant l'historique de tous les tests passés sont ensuite extraites les tables de score CSV qui seront présentées dans les paragraphes suivant. Ces dernières sont disponibles en ligne\footnote{\url{https://perso.telecom-paristech.fr/ychalier/anomaly/params/}}. Pour chaque phase de test, le script génère :
+Enfin, du grand fichier généré contenant l'historique de tous les tests passés sont ensuite extraites les tables de score CSV qui seront présentées dans les paragraphes suivant. Ces dernières sont disponibles à l'adresse \url{https://perso.telecom-paristech.fr/ychalier/anomaly/params/}. Pour chaque phase de test, le script génère :
 \begin{itemize}
 \item Un fichier de scores (TPR, FPR, TNR, FNR, PPV, \emph{f1-score}, temps de prédiction)
 \item Pour chaque classe différente d'estimateur, un fichier contenant tous les jeux de paramètres
@@ -541,18 +479,10 @@ paramètre & valeur \\
 
 \subsection{SVM}
 
-L'algorithme du SVM est initialement défini pour la discrimination d'une variable qualitative binaire; c'est à dire des variables contenant deux éléments non ordonnables (eg la variable sexe contient les éléments masculin et féminin. Il est à ce titre particulièrement indiqué dans le cas de problèmes linéairement séparables. On cherche donc un hyperplan capable de séparer l'espace vectoriel en deux. Or, nous sommes en présence d'un problème à trois classes. Nous ne pouvons donc pas trouver un unique hyperplan qui séparerait notre espace. Nous allons donc devoir adapter la méthode générale. Plusieurs adaptations existent. Parmi ces dernières, nous avons considéré les deux suivantes :
+L'algorithme du SVM est initialement défini pour la discrimination d'une variable qualitative binaire. Il est à ce titre particulièrement indiqué dans le cas de problèmes linéairement séparables. Or, nous sommes en présence d'un problème à trois classes. Nous allons donc devoir adapter la méthode générale. Plusieurs adaptations existent. Parmi ces dernières, nous avons considéré les deux suivantes :
 
 \begin{description}
-\item["One-Versus-the-Rest" :] la plus simple et la plus ancienne des méthodes d'otpimisation indirectes. Il s'agit d'une extension au cas multiclasses proposée par Vapnik \cite{Vapnik}. Elle consiste à construire $p$ estimateurs binaires (à vecteurs de supports) pour classifier $p$ classes. S'il s'agit d'une extension facile à mettre en place, cette méthode risque d'introduire artificiellement un déséquilibre des classes dans la construction des modèles individuels. Dans notre cas, nous avons 70847 points représentants des voitures contre 202 représentants des motos. Aussi, la méthode SVM obtiendra des moins bons résutlats pour séparer ces deux classes.
-
-\begin{figure}
-\centering
-\includegraphics[scale=0.6]{img/svm.png}
-\includegraphics[scale=0.6]{img/svm_OneVsAll.png}
-\caption{Problème multi-classe et séparation "One-Versus-the-Rest"}
-\end{figure}
-
+\item["One-Versus-the-Rest" :] la plus simple et la plus ancienne des méthodes d'otpimisation indirectes. Il s'agit d'une extension au cas multiclasses proposée par Vapnik \cite{Vapnik}. Elle consiste à construire $p$ estimateurs binaires (à vecteurs de supports) pour classifier $p$ classes. S'il s'agit d'une extension facile à mettre en place, cette méthode risque d'introduire artificiellement un déséquilibre des classes dans la construction des modèles individuels.
 \item[Méthode directe de \textbf{Crammer et Singer} \cite{Crammer} :] contrairement aux schémas de décomposition indirect (comme la méthode "OVR", cette approche consiste à séparer les classes en résolvant un unique problème d'optimisation. Ainsi, cela revient à résoudre un problème d'optimisation à $(p-1)\times n$ contraintes (où $p$ est le nombre de classe et $n$ le nombre d'observations).
 \end{description}
 Comme pour les méthodes précédentes, la Table \ref{params_svm} liste les paramètres testés.
@@ -569,13 +499,12 @@ paramètre & ensemble des valeurs testées \\
 \caption{Liste des paramètres testés pour SVM\label{params_svm}}
 \end{table}
 
-\noindent Pour implémenter cette méthode, nous avons utilisé la fonction linearSVC de la bibiliothèque SKlearn. Cette fonction, similaire à SVC avec le paramètre kernel='linear', est implémenté différement et propose plus de flexibilité dans le choix des pénalités et des fonctions de perte. Elle s'adapte donc mieux à un grand nombre d'échantillons. Pour tous les essais, \texttt{LinearSVC} a eu pour paramètres \begin{center}
+\noindent Nous noterons que pour tous les essais, \texttt{LinearSVC} a eu pour paramètres \begin{center}
 \texttt{penalty='l1'} et \texttt{dual=False}
 \end{center}
-En effet, comme nous avons trois classes pour deux caractéristiques de sélection, il est plus performant de résoudre le problème primal (par défaut, le dual est sélectionné). De plus, \texttt{GridsearchCV} ne permet pas la combinaison de la résolution du problème primal et de la norme 2 comme fonction de pénalisation. %TODO : finir phrase
+En effet, comme nous avons trois classes pour deux caractéristiques de sélection, il est plus performant de résoudre le problème primal (par défaut, le dual est sélectionné). De plus, \texttt{GridsearchCV} ne permet pas la combinaison du %TODO : finir phrase
 
-Nous avons obtenu le meilleur résultat avec la combinaison des paramètres présentée dans la Table \ref{best_params_svm}.
-
+Nous avons obtenu le meilleur résultat avec la combinaison des paramètres suivants présentée dans la Table \ref{best_params_svm}.
 \begin{table}[h]
 \centering
 \begin{tabular}{ll}
@@ -587,7 +516,6 @@ paramètre & valeur \\
 \end{tabular}
 \caption{Paramètres optimaux pour SVM\label{best_params_svm}}
 \end{table}
-
 Pour ces paramètres, nous obtenons la matrice de confusion suivante :
 $$\begin{bmatrix}
 2836 & 1 \\ 
@@ -632,10 +560,6 @@ Cette fonction est autonome et portable; elle ne nécessite qu'un fichier conten
 
 
 \begin{thebibliography}{9}
-\bibitem{blinding}
-Hocheol Shin, Dohyun Kim, Yujin Kwon, and Yongdae Kim
-Illusion and Dazzle: Adversarial Optical Channel Exploits against Lidars for Automotive Applications, Korea Advanced Institute of Science and Technology 
-
 \bibitem{ref1}
           Deepika, N AND Sajith Variyar, V. V.,
           Obstacle classification and detection for vision based navigation for autonomous driving,
@@ -654,19 +578,6 @@ Illusion and Dazzle: Adversarial Optical Channel Exploits against Lidars for Aut
 
 \bibitem{Crammer}
 Crammer, K., Singer, Y.: On the algorithmic implementation of multiclass kernel-based vector machines. J. Mach. Learn. Res. 2, 265–292 (2001)
-
-\bibitem{work1}
-Mourad Bendjaballah, Stevica Graovac and Mohammed Amine Boulahlib, A classification of on-road obstacles according to their relative velocities, EURASIP Journal on Image and Video Processing (2016) 
-
-\bibitem{work2}
-Danil V. Prokhorov, Road obstacle classification with attention windows, 2010 IEEE Intelligent Vehicles Symposium
-
-\bibitem{work3}
-Michael S. Darms, Paul E. Rybski, Christopher Baker, and Chris Urmson, Obstacle Detection and Tracking for the Urban Challenge, IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 10, NO. 3, SEPTEMBER 2009
-
-\bibitem{work4}
-Liang, Mingpei, et al. "Counting and classification of highway vehicles by regression analysis." IEEE Transactions on Intelligent Transportation Systems 16.5 (2015): 2878-2888.
-
 \end{thebibliography}
 
 \listoffigures
