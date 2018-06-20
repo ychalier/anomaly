@@ -66,11 +66,11 @@ if sys.argv[1] == "mlp":
                params['hidden_layer_count'],\
                scores['f1'],\
                c=[activation_color[x] for x in params["activation"]])
-    ax.set_xlabel("hidden layer size")
-    ax.set_ylabel("hidden layer count")
-    ax.set_zlabel("f1 score")
-    plt.legend(handlelist, activation_color.keys(), loc='best')
-    plt.title("MLP score based on activation function")
+    ax.set_xlabel("Taille des couches cachées")
+    ax.set_ylabel("Nombre de couches cachées")
+    ax.set_zlabel("Score F1")
+    plt.legend(handlelist, activation_color.keys(), loc='best', title="Fonction d'activation")
+    plt.title("Evolution du score du MLP selon la fonction d'activation'")
     plt.savefig('mlp_activation.png')
 
     fig = plt.figure(figsize=(12, 12))
@@ -81,11 +81,11 @@ if sys.argv[1] == "mlp":
                params['hidden_layer_count'],\
                scores['f1'],\
                c=[solver_color[x] for x in params["solver"]])
-    ax.set_xlabel("hidden layer size")
-    ax.set_ylabel("hidden layer count")
-    ax.set_zlabel("f1 score")
-    plt.legend(handlelist, solver_color.keys(), loc='best')
-    plt.title("MLP score based on solver function")
+    ax.set_xlabel("Taille des couches cachées")
+    ax.set_ylabel("Nombre de couches cachées")
+    ax.set_zlabel("Score F1")
+    plt.legend(handlelist, solver_color.keys(), loc='best', title="Algorithme de descente du gradient")
+    plt.title("Evolution du score du MLP selon la fonction de descente du gradient")
     plt.savefig('mlp_solver.png')
 
     fig = plt.figure(figsize=(12, 12))
@@ -126,7 +126,7 @@ elif sys.argv[1] == "ada":
                c=[depth_colors[x] for x in params["base_estimator__max_depth"]])
     ax.set_xlabel("learning rate")
     ax.set_ylabel("n_estimators")
-    ax.set_zlabel("f1 score")
-    plt.legend(handlelist, depth_colors.keys(), loc='best')
-    plt.title("AdaBoost f1 score and base estimator (DecisionTree) max depth")
+    ax.set_zlabel("Score F1")
+    plt.legend(handlelist, depth_colors.keys(), loc='best', title="Profondeur maximale")
+    plt.title("Evolution du score de AdaBoost selon la profondeur maximale des DecisionTrees")
     plt.savefig('adaboost_depth.png')

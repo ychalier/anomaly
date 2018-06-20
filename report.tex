@@ -9,6 +9,9 @@
 \usepackage{amsmath}
 \usepackage{hyperref}
 
+\usepackage{cite}
+
+
 \usepackage[french]{algorithm2e}
 
 \usepackage{enumerate}
@@ -18,6 +21,9 @@
 \date{\today}
 
 \renewcommand{\arraystretch}{1.2}
+
+\usepackage{etoolbox}
+\apptocmd{\thebibliography}{\raggedright}{}{}
 
 \begin{document}
 
@@ -46,7 +52,6 @@
 	{\large \today\par}
 \end{titlepage}
 
-
 \begin{abstract}
 Dans le contexte de l'internet des objets, les messages peuvent contenir de fausses informations générées par un utilisateur authentifié. Par conséquence, les mécanismes de sécurité reposant sur le chiffrement et la signature des messages sont inefficaces face à ces attaques. Les classeurs basés reposant sur l'apprentissage machine (Machine Learning) permettent de classer si un objet émettant des données est malicieux ou non.
 \end{abstract}
@@ -56,31 +61,30 @@ Dans le contexte de l'internet des objets, les messages peuvent contenir de faus
 L'exercice de la conduite est synonyme de changements constants. Ainsi, lorsque nous conduisons, notre attention est entièrement consacrée à notre environnement, car notre sécurité et celle des personnes qui nous entourent sont en jeu. Nous prêtons une attention particulière aux obstacles qui peuvent surgir, qu'il s'agisse tout simplement d'autres voitures partageant la route, des piétons ou encore des motocyclistes.
 
 \begin{figure}
-	\centering
-	\includegraphics[width=\textwidth]{img/sensors.png}
-	\caption{Ensemble des capteurs présents dans le véhicule\label{sensors}}
+\centering
+\includegraphics[width=\textwidth]{img/sensors.png}
+\caption{Ensemble des capteurs présents dans le véhicule\label{sensors}}
 \end{figure}
 
-Longtemps fantasmés, les véhicules autonomes sont aujourd'hui réalité grâce aux incroyables progrès réalisés dans les domaines de l'intelligence artificielle et du développement de capteurs. Si ces processus visent à remplacer le conducteur humain, il semble naturel qu'ils prêtent la même attention aux obstacles. L'image \ref{sensors} présente la complexité introduite dans ce nouvel environnement. Un nombre important de capteurs est en effet nécessaire pour avoir une vue complète du contexte extérieur. Cela comprend à la fois des communications Véhicule-à-Véhicule et l'analyse des données des capteurs.
+Longtemps fantasmés, les véhicules autonomes sont aujourd'hui réalité grâce aux incroyables progrès réalisés dans les domaines de l'intelligence artificielle et du développement de capteurs. Si ces processus visent à remplacer le conducteur humain, il semble naturel qu'ils prêtent la même attention aux obstacles. La Figure \ref{sensors} présente la complexité introduite dans ce nouvel environnement. Un nombre important de capteurs est en effet nécessaire pour avoir une vue complète du contexte extérieur. Cela comprend à la fois des communications Véhicule-à-Véhicule et l'analyse des données des capteurs.
 
 ~\par
 
 Dans ce travail, nous nous concentrerons sur les trois types d'obstacles les plus communs sur une route :
 \begin{itemize}
-\item une voiture ;
-\item une moto ;
+\item une voiture,
+\item une moto et
 \item un piéton.
-
 \end{itemize}
 
 ~\par
 
-Tout travail sur l'analyse d'obstacles nécessite la détection préalable de régions d'intérêt en utilisant par exemple la méthode du "point-in-polygon" \cite{ref1}, ou encore à l'aide de capteurs à ultrasons et d'analyse de signal \cite{ref2}. Ce travail n'a pas comme objectif de revenir sur l'utilisation de ces techniques, mais se concentrera sur l'analyse à posteriori des dimensions ainsi collectées avec pour but de proposer une classification efficace. La Figure \ref{data_flow} récapitule le flot de données dans un véhicule autonome. Comme nous pouvons le voir, en collectant les données des capteurs et provenant des véhicules aux alentours, le travail de classification (ou "perception") permet la modélisation de l'environnement et de déterminer le comportement du véhicule. 
+Tout travail sur l'analyse d'obstacles nécessite la détection préalable de régions d'intérêt en utilisant par exemple la méthode du "point-in-polygon" \cite{ref1}, ou encore à l'aide de capteurs à ultrasons et d'analyse de signal \cite{ref2}. Ce travail n'a pas comme objectif de revenir sur l'utilisation de ces techniques, mais se concentrera sur l'analyse à posteriori des dimensions ainsi collectées avec pour but de proposer une classification efficace. La Figure \ref{data_flow} récapitule le flot de données dans un véhicule autonome. Comme nous pouvons le voir, en collectant les données des capteurs et provenant des véhicules aux alentours, le travail de classification (ou "perception") permet la modélisation de l'environnement et de déterminer le comportement du véhicule.
 
 \begin{figure}
-	\centering
-	\includegraphics[width=.9\textwidth]{img/data_flow.png}
-	\caption{Flux de données\label{data_flow}}
+\centering
+\includegraphics[width=\textwidth]{img/data_flow.png}
+\caption{Flux de données\label{data_flow}}
 \end{figure}
 
 \section{Attaques}
@@ -92,10 +96,10 @@ Comme nous l'avons vu grâce aux figures \ref{sensors} et \ref{data_flow}, le no
 \item[Attaque par modification] Un attaquant peut envoyer des faux messages à la victime. Cela aura pour conséquence de causer une fausse perception de l'environnement et incidemment créer un accident.
 \end{description}
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=\textwidth]{img/blinding.png}
-	\caption{Attaque par aveuglement\label{blinding}}
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{img/blinding.png}
+\caption{Attaque par aveuglement\label{blinding}}
 \end{figure}
 
 \section{Travaux connexes}
@@ -115,6 +119,7 @@ Au préalable, nous nous assurons de trouver des bases de données avec les dime
 Ensuite, nous proposerons une méthodologie de sélection d'un algorithme d'apprentissage supervisé en évaluant leur précision et leur efficacité respectives. Dans ce travail, nous avons considéré les algorithmes suivant: 
 
 \begin{itemize}
+\label{classifiers}
 \item Réseau de Neurones;
 \item Adaboost;
 \item SVM;
@@ -147,13 +152,24 @@ Ensuite, nous proposerons une méthodologie de sélection d'un algorithme d'appr
 
 \section{Première implémentation}
 
+\subsection{Environnement Python}
+
+Afin d'éviter d'éventuels problème de version, nous avons opté pour l'utilisation d'environnements virtuels à l'aide du module Virtualenv \cite{venv}. Nous avons choisi le noyau Python 3.6. Les modules utilisés sont regroupés dans le fichier requirements.txt présent dans le dépôt git. Les principaux sont :
+\begin{itemize}
+\item Pandas (analyse de données) \cite{pandas}
+\item scikit-learn (Machine Learning) \cite{sklearn}
+\item Numpy (calcul scientifique) \cite{numpy}
+\item Matplotlib (tracé et graphe) \cite{matplotlib}
+\item Jupyter (interface interactive de programmation) \cite{jupyter}
+\end{itemize}
+
 \subsection{Objectif}
 
 En premier lieu, nous souhaitions commencer par une vision globale des données et du travail à effectuer. Dans cette partie, nous allons nous efforcer d'obtenir une première fonction de classification se basant sur des critères très simples (les extremums de largeur et de longueur) : des régions de décision rectangulaires et arbitraires.
 
 \subsection{Mise en {\oe}uvre}
 
-L'objectif de cette étude est la détection d'anomalies dans la mesure de longueur et de largeur. Nous disposions d'une base de données contenant des mesures de voiture, provenant de CarQuery \cite{carquery}. Nous avons extrait les deux colonnes de largeur et longueur dans une DataFrame du module d'analyse de données, Pandas \cite{pandas}, en Python.
+L'objectif de cette étude est la détection d'anomalies dans la mesure de longueur et de largeur. Nous disposions d'une base de données contenant des mesures de voiture, provenant de CarQuery \cite{carquery}. Nous avons extrait les deux colonnes de largeur et longueur dans une DataFrame du module d'analyse de données, Pandas, en Python. Cette classe permet entre autres de représenter efficacement des tableaux de taille importante et de nommer les colonnes.
 
 Après un premier affichage des données (Figure \ref{first_plot}), il est apparu que beaucoup de points apparaissaient en plusieurs fois, aussi la séparation de la base de données en points uniques et points non-uniques se révéla pertinente. Cela permit de réduire le nombre de lignes à de 54808 à 5026, soit un facteur dix (Figure \ref{screen_shape}).
 
@@ -165,7 +181,7 @@ Après un premier affichage des données (Figure \ref{first_plot}), il est appar
 
 Manuellement, nous avons alors défini des zones simples (rectangulaires) en tant que régions de décision de la plausibilité des dimensions des véhicules (Table \ref{regions_decision_manuelles_valeurs}). Ces zones ont été définies au jugé, afin d'encadrer le plus de points valides sans toutefois englober une zone de l'espace trop large. Une approche pour déterminer ces seuils peut être l'utilisation des records de taille enregistrés au cours de l'histoire.
 
-\begin{table}[h]
+\begin{table}
 \centering
 \begin{tabular}{llll}
 cadre & validité & intervalle de longueur & intervalle de largeur \\
@@ -191,18 +207,7 @@ Hors de la zone verte, et dans les deux cadres gris, nous avons alors généré 
 
 \section{Environnement de travail}
 
-Dans cette partie, nous décrivons les outils utilisés et développés pour poursuivre notre étude. Ces éléments se retrouvent sur le dépôt git que nous avons utilisé pour sauvegarder notre code : \href{https://github.com/ychalier/anomaly/}{github.com/ychalier/anomaly}.
-
-\subsection{Environnement Python}
-
-Afin d'éviter d'éventuels problème de version, nous avons opté pour l'utilisation d'environnements virtuels à l'aide du module \texttt{virtualenv}. Nous avons choisi le noyau Python 3.6. Les modules utilisés sont regroupés dans le fichier requirements.txt présent dans le dépôt git. Les principaux sont :
-\begin{itemize}
-\item \texttt{numpy}
-\item \texttt{pandas}
-\item \texttt{matplotlib}
-\item \texttt{jupyter}
-\item \texttt{scikit-learn}
-\end{itemize}
+Dans cette partie, nous décrivons les outils utilisés et développés pour poursuivre notre étude. Ces éléments se retrouvent sur le dépôt git que nous avons utilisé pour sauvegarder notre code \cite{git}.
 
 \subsection{Chargement des bases de données}
 
@@ -233,20 +238,28 @@ Dans le cas des bases de données décrites au paragraphe précédent, l'étape 
 
 La DataFrame finale possède 4 colonnes, plus une pour l'index. Ces colonnes sont la classe du véhicule (entier), la longueur (flottant), la largeur (flottant), et le caractère malicieux (booléen).
 
-\paragraph{Génération des données malicieuses} Pour un nombre de points à générer donné, le programme génère des points uniformément dans la zone rectangulaire définie par les minimums et maximums de longueur et de largeur de la base de données initiales. À chacun de ces points est associé, uniformément, une classe aléatoire parmi les classes présentes dans la base de données. La génération utilise un \emph{seed} entier entre 0 et $2^{32}-1$, ré-utilisable ultérieurement pour générer le même jeu de données.
+\paragraph{Génération des données malicieuses} \textit{Toutes les données que nous avons recueillies proviennent de base de données légitimes. Afin d'obtenir des données malicieuses afin d'entraîner nos classeurs, nous avons procédé à une génération manuelle de ces dernières. Nous nous sommes concentré sur une génération uniforme, ce qui peut correspondre à une attaque d'aveuglement des capteurs.} ~\par Pour un nombre de points à générer donné, le programme génère des points uniformément dans la zone rectangulaire définie par les minimums et maximums de longueur et de largeur de la base de données initiales. À chacun de ces points est associé, uniformément, une classe aléatoire parmi les classes présentes dans la base de données. La génération utilise un \emph{seed} entier entre 0 et $2^{32}-1$, ré-utilisable ultérieurement pour générer le même jeu de données.
 
-\paragraph{Séparation de la matrice} Avec le \emph{seed} généré précédemment, la grande matrice est tout d'abord mélangée pour éviter d'avoir toutes les données triées. Puis, elle est coupée en deux moitiés :
+\paragraph{Séparation de la matrice} La matrice est pour l'instant stockée en tant qu'attribut de l'objet \texttt{Detector}. Avec le \emph{seed} généré précédemment, elle est tout d'abord mélangée pour éviter d'avoir toutes les données triées. Puis, elle est coupée en deux moitiés :
 \begin{itemize}
 \item le jeu d'entraînement
 \item le jeu de test
 \end{itemize}
-Enfin, on procède à la division de chacune de ces matrices en deux matrices, une pour les \emph{features} et une pour le label de sortie (le caractère malicieux). Au final, chacune de ces DataFrames (\texttt{x\_train}, \texttt{y\_train}, \texttt{x\_test} et \texttt{y\_test}) est stockée dans l'objet \texttt{Detector}.
+La première moitié servira à entraîner nos classeurs, tandis que la seconde nous permettra de confronter ces classeurs à des données réelles, sélectionner les paramètres et définir le meilleur classeur.
+
+Enfin, on procède à la division de chacune de ces matrices en deux matrices, une pour les \emph{features} et une pour le label de sortie (le caractère malicieux). Au final, chacune de ces DataFrames (\texttt{x\_train}, \texttt{y\_train}, \texttt{x\_test} et \texttt{y\_test}) est stockée dans l'objet \texttt{Detector}. La figure \ref{xtrain} montre les 10 premières lignes de \texttt{x\_train}\label{features_matrix}.
+
+\begin{figure}
+\centering
+\includegraphics[scale=.8]{img/xtrain.png}
+\caption{Premières lignes de la matrice de \emph{features} du jeu d'entraînement\label{xtrain}}
+\end{figure}
 
 \subsection{Classe \texttt{Detector}}
 
-Comme expliqué précédemment, cette classe stocke les jeux de données utilisés pour l'entraînement et la prédiction. Elle va aussi permettre de centraliser les tests de \emph{classifiers}, et l'affichage des données. Ses méthodes (Table \ref{methodes_detector}) sont donc une sorte d'API pour la réalisation de la fonction de prédiction finale, objectif du projet.
+Comme expliqué précédemment, cette classe stocke les jeux de données utilisés pour l'entraînement et la prédiction. Elle va aussi permettre de centraliser les tests de classeurs, et l'affichage des données. Ses méthodes (Table \ref{methodes_detector}) sont donc une sorte d'API pour la réalisation de la fonction de prédiction finale, objectif du projet.
 
-\begin{table}[h]
+\begin{table}
 \centering
 \begin{tabular}{p{2.3cm} p{3.1cm} p{4.6cm}}
 
@@ -254,12 +267,12 @@ Comme expliqué précédemment, cette classe stocke les jeux de données utilis�
 & \multirow{2}{*}{\texttt{append\_odd\_points}} & Étape 7 du chargement des bases de données \\
 & \multirow{2}{*}{\texttt{format}} & Étapes 8 et 9 du chargement des bases de données \\
 \hline
-& \multirow{2}{*}{\texttt{classify}} & Entraîne un \emph{classeur} et renvoie le score de test\\
-Interface \par \texttt{sklearn} & \multirow{2}{*}{\texttt{tune\_parameters}} & Trouve le meilleur jeu de paramètres pour un \emph{classifier}\\
+& \multirow{3}{*}{\texttt{classify}} & Entraîne un classeur et renvoie la matrice de confusion sur le jeu de test\\
+Interface \par \texttt{sklearn} & \multirow{2}{*}{\texttt{tune\_parameters}} & Trouve le meilleur jeu de paramètres pour un classeur \\
 & \multirow{2}{*}{\texttt{predict}} & Fonction finale de prédiction online \\
 \hline
 \multirow{4}{*}{Affichage}& \multirow{2}{*}{\texttt{plot}} & Affiche la matrice de données complètes\\
-& \texttt{plot\_decision\_}\par\texttt{boudaries} & Affiche les régions de décisions d'un \emph{classeur}\\
+& \texttt{plot\_decision\_}\par\texttt{boudaries} & Affiche les régions de décisions d'un classeur\\
 
 \end{tabular}
 \caption{Méthodes de la classe \texttt{Detector}\label{methodes_detector}}
@@ -365,7 +378,7 @@ Il s'agit du complémentaire du NPV. Un FOR important indique l'incapacité de n
 
 ~\par
 
-Ce mode de représentation permet non seulement de mettre en évidence les erreurs qui sont faites par notre classificateur, mais surtout des types d'erreurs (mauvaise détection d'une classe ou surestimation du des items positifs par exemple) qui sont commises. En effet, l'utilisation de la seule “accuracy” peut être trompeuse dans la mesure où le nombre d'observations dans chaque classe est inégale. \\
+Ce mode de représentation permet non seulement de mettre en évidence les erreurs qui sont faites par notre classeur, mais surtout des types d'erreurs (mauvaise détection d'une classe ou surestimation du des items positifs par exemple) qui sont commises. En effet, l'utilisation de la seule “accuracy” peut être trompeuse dans la mesure où le nombre d'observations dans chaque classe est inégale. \\
 \medskip
 Pour illustrer ce phénomène, prenons un exemple précis. Considérons l'algorithme SVM (support vector Machine) avec les paramètres suivants:
 \medbreak
@@ -427,31 +440,33 @@ Dans notre cas, nous cherchons à minimiser le nombre de faux positifs et de fau
 
 \section{Recherche des paramètres optimaux}
 
-Une majeure partie de notre temps a été investie dans la recherche des jeux de paramètres optimaux pour chacun des \emph{classifiers} sélectionnés. Nous avons procédé en deux temps. Premièrement, nous avons implémenté un script testant des intervalles de paramètres et renvoyant les meilleurs combinaisons. Puis, nous avons utilisé ce script pour des intervalles de valeurs de paramètres que nous avons jugé pertinents.
+À cette étape du projet, nous avions utilisés différents classeurs mais laissé les paramètres de ces derniers aux valeurs par défaut. Les résultats étaient assez mauvais pour SVM, le perceptron multi-couches et AdaBoost. Seule la Random Forest semblait se comporter correctement. Nous nous sommes donc penché sur l'optimisation des paramètres des trois premiers classeurs cités.
+
+Une majeure partie de notre temps a été investie dans la recherche des jeux de paramètres optimaux pour chacun des classeurs sélectionnés. Nous avons procédé en deux temps. Premièrement, nous avons implémenté un script testant des intervalles de paramètres et renvoyant les meilleurs combinaisons. Puis, nous avons utilisé ce script pour des intervalles de valeurs de paramètres que nous avons jugé pertinents.
 
 \subsection{Recherche exhaustive et validation croisée}
 
-Notre algorithme de recherche des paramètres est basé sur une fonction de scikit-learn, dans le module de sélection de modèle : \texttt{GridSearchCV}. Cette fonction est utilisée dans la méthode \texttt{tune\_parameters} du \texttt{Detector}. Cette fonction effectue une recherche exhaustive d'un jeu de paramètres optimal pour un \emph{classifier} donné à partir d'un dictionnaire dont les clés sont les paramètres à faire varier et les valeurs les listes des valeurs prises par ces paramètres.
+Notre algorithme de recherche des paramètres est basé sur une fonction de scikit-learn, dans le module de sélection de modèle : \texttt{GridSearchCV}. Cette fonction est utilisée dans la méthode \texttt{tune\_parameters} du \texttt{Detector}. Cette fonction effectue une recherche exhaustive d'un jeu de paramètres optimal pour un classeur donné à partir d'un dictionnaire Python\footnote{Conteneur pouvant être indexé par n'importe quel objet dont Python peut produire un \emph{hash}. Le fonctionnement est similaire à une table de hachage en C ou une Map en Java.}, dont les clés (index) sont les paramètres à faire varier et les valeurs les listes des valeurs prises par ces paramètres.
 
-Cette fonction utilise de plus la technique de validation croisée. En quelques mots, cette technique consiste en la division des données d'entraînement en $C$ sous-échantillons. 1 sous-échantillon servira à la validation du modèle, tandis que les $C-1$ autres permettront l'entraînement du modèle. On répète cette opération $C$ fois, afin que chaque sous-échantillon soit utilisé pour la validation une fois. La performance du modèle est ensuite évaluée en effectuant la moyenne des $C$ erreurs quadratiques.
+Cette fonction utilise de plus la technique de validation croisée. En quelques mots, cette technique consiste en la division des données d'entraînement en $C$ sous-échantillons. De façon cyclique, 1 sous-échantillon servira à la validation du modèle, tandis que les $C-1$ autres permettront l'entraînement du modèle. On répète la technique de validation croisée $C$ fois, afin que chaque sous-échantillon soit utilisé pour la validation une fois. La performance du modèle est ensuite évaluée en moyennant les scores de chaque itération. Cette méthode permet de prédire l'efficacité d'un classeur en évitant tout phénomène d'\emph{overfitting} sans avoir à disposer d'un jeu de test indépendant.
 
-La fonction d'évaluation du score utilisée par \texttt{GridSearchCV} est par ailleurs modifiable. Dans le cadre de notre projet, nous nous intéressons au \emph{f1-score} pour évaluer un modèle, et nous souhaitions aussi extraire, si possible, les tendances d'évolution du score en fonction des différents paramètres testés. Nous avons donc implémenté notre propre fonction d'évaluation, prenant en paramètre l'estimateur à évaluer et les matrices de \emph{features} et de \emph{labels} à utiliser pour cela. Cette fonction effectue les opérations suivantes :
+La fonction d'évaluation du score utilisée par \texttt{GridSearchCV} est par ailleurs paramétrable. Dans le cadre de notre projet, nous nous intéressons au \emph{f1-score} pour évaluer un classeur, et nous souhaitions aussi extraire les tendances de l'évolution du score en fonction des différents paramètres testés. Nous pourrons alors interpréter l'impact des différents paramètres, et expliquer leur rôle. Nous avons donc implémenté notre propre fonction d'évaluation, prenant en paramètre le classeur à évaluer (Section \ref{classifiers}) et les matrices de \emph{features} et de \emph{labels} (Section \ref{features_matrix}) à utiliser pour cela. Cette fonction effectue les opérations suivantes :
 
 \begin{enumerate}
-\item Prédiction des \emph{labels} à partir de la matrice de \emph{features}
-\item Calcul de la matrice de confusion entre la prédiction et la matrice donnée en consigne
-\item \textbf{Sauvegarde des paramètres et du score}
+\item Classification des éléments du jeu de test (ici, le sous-échantillon mentionné dans la validation croisée). Production d'une matrice de \emph{labels}, contenant les classes résultant de la classification.
+\item Calcul de la matrice de confusion entre la prédiction et la matrice donnée en consigne. Parmi les données qui viennent d'être classé, on compte le nombre de vrais positifs, de vrais négatifs, de faux positifs et de faux négatifs.
+\item Sauvegarde des paramètres et du score
 \item Retour du \emph{f1-score}
 \end{enumerate}
 
-L'étape 3 consiste en l'écriture dans un fichier d'une ligne contenant la description détaillée des paramètres de l'estimateur ainsi que les résultats des scores. La fonction de recherche exhaustive étant fortement parallèle, chaque processus écrit dans son propre fichier. Une fois tous les tests effectués, ces fichiers sont concaténés en un grand fichier. Cette méthode d'enregistrement continu permet en outre de sauvegarder les résultats des tests au fur et à mesure de l'exécution du programme, ce qui se révèlera important lors d'interruptions prématurées de cette exécution.
+L'étape 3 consiste en l'écriture dans un fichier d'une ligne contenant la description détaillée des paramètres du classeur ainsi que les résultats des scores. La fonction de recherche exhaustive étant fortement parallèle, chaque processus écrit dans son propre fichier. Une fois tous les tests effectués, ces fichiers sont concaténés en un grand fichier. Cette méthode d'enregistrement continu permet en outre de sauvegarder les résultats des tests successifs des itérations de la validation croisée au fur et à mesure de l'exécution du programme, ce qui se révèlera important lors d'interruptions prématurées de cette exécution.
 
-En effet, ce fut l'un de nos plus importants problèmes lors de ce projet. Pour le Multi-layered Perceptron, il y avait beaucoup de paramètres en jeu, et la complexité combinatoire mélangée avec le temps de convergence des réseaux neuronaux ont rendu l'exécution du script interminables. Notre plus long essai eut lieu sur le serveur InfRes \href{http://lame10.enst.fr}{lame10} doté pourtant de 80 cpus, sur une durée de plus de 18 heures. Malgré tout, il aura fallut interrompre l'exécution du programme manuellement pour rendre le serveur disponible. Le fichier généré pesait plus de 120Mo, et les deux CSV extraits pèsent respectivement 25Mo et 23Mo.
+En effet, ce fut l'un de nos plus importants problèmes lors de ce projet. Pour le Multi-layered Perceptron, il y avait beaucoup de paramètres en jeu, et la complexité combinatoire mélangée avec le temps de convergence des réseaux neuronaux ont rendu le temps d'exécution du script interminable. Notre plus long essai eut lieu sur le serveur InfRes \href{http://lame10.enst.fr}{lame10} doté pourtant de 80 CPUs, sur une durée de plus de 18 heures ; l'intégralité des tests n'aura pu être effectuée, nous avons dû manuellement interrompre l'exécution.
 
 Enfin, du grand fichier généré contenant l'historique de tous les tests passés sont ensuite extraites les tables de score CSV qui seront présentées dans les paragraphes suivant. Ces dernières sont disponibles en ligne\footnote{\url{https://perso.telecom-paristech.fr/ychalier/anomaly/params/}}. Pour chaque phase de test, le script génère :
 \begin{itemize}
 \item Un fichier de scores (TPR, FPR, TNR, FNR, PPV, \emph{f1-score}, temps de prédiction)
-\item Pour chaque classe différente d'estimateur, un fichier contenant tous les jeux de paramètres
+\item Pour chaque classe différente de classeur, un fichier contenant tous les jeux de paramètres
 \end{itemize}
 Ces tables sont, à la manière des tables en SQL, liées par une clé primaire externe qui est l'identifiant (unique) de la combinaison de paramètres.
 
@@ -459,17 +474,24 @@ Ces tables sont, à la manière des tables en SQL, liées par une clé primaire 
 
 \subsection{Multi-layered perceptron}
 
-À l'aide d'un autre petit script Python, nous avons pu afficher les données récoltées dans les CSV mentionnés plus tôt. Les Figures \ref{mlp_activation} et \ref{mlp_solver} sont le résultat du long test pour les paramètres du MLP. La Table \ref{params_mlp} regroupe les différents paramètres testés.
+À l'aide d'un autre petit script Python, nous avons pu afficher les données récoltées dans les CSV mentionnés plus tôt. Les Figures \ref{mlp_activation} et \ref{mlp_solver} sont le résultat du test pour les paramètres du MLP. La Table \ref{params_mlp} regroupe les différents paramètres testés, à savoir :
+\begin{description}
+\item[learning rate] Taux de modification des poids à chaque mise à jour (i.e. à chaque rétropropagation)
+\item[alpha] Pénalité de régularisation (en utilisant la norme $l_2$)
+\item[activation] Fonction d'activation du réseau neuronal
+\item[solver] Algorithme de descente du gradient
+\item[hidden layers size] Nombre et taille des couches internes du réseau
+\end{description}
 
 \begin{table}
 \centering
-\begin{tabular}{ll}
+\begin{tabular}{l l}
 paramètre & ensemble des valeurs testées \\
 \hline
 \texttt{learning\_rate} & \texttt{'constant'}, \texttt{'invscaling'} et \texttt{'adaptive'}\\
 \texttt{alpha} & $\{10^{-k} \>\> | \>\> k \in [\![4, 7]\!] \}$ \\
 \texttt{activation} & \texttt{'identity'}, \texttt{'logistic'}, \texttt{'tanh'} et \texttt{'relu'} \\
-\texttt{solver} & \texttt{'lbfgs'}, \texttt{'sgd'} et \texttt{'adam'}\\
+\texttt{solver} &\texttt{'lbfgs'}, \texttt{'sgd'} et \texttt{'adam'}\\
 \texttt{hidden\_layer\_sizes} & 0 à 5 \emph{layers}, de taille variant de 1 à 49\\
 \end{tabular}
 \caption{Liste des paramètres testés pour le multi-layered perceptron\label{params_mlp}}
@@ -507,8 +529,6 @@ paramètre & valeur \\
 \caption{Paramètres optimaux pour MLP\label{best_params_mlp}}
 \end{table}
 
-%TODO : insister plus sur les problèmes de variance / inconsistence
-
 \subsection{AdaBoost}
 
 Comme pour MLP, la Table \ref{params_ada} liste les paramètres testés et la Figure \ref{adaboost_depth} montre l'évolution du score en fonction de ces paramètres.
@@ -525,9 +545,9 @@ paramètre & ensemble des valeurs testées \\
 \caption{Liste des paramètres testés pour AdaBoost\label{params_ada}}
 \end{table}
 
-Ici, il y a peu d'interprétations possibles : les paramètres influent peu sur la performance de l'estimateur. Dès lors que les arbres sont suffisamment profonds, qu'il y a assez d'estimateurs agrégés et que le taux d'apprentissage et correct, les résultats sont vite optimaux. La fonction de recherche exhaustive nous a renvoyé la combinaison de paramètres présentée dans la Table \ref{best_params_ada} (pour un \emph{f1-score} moyen maximal de 0,947).
+Ici, il y a peu d'interprétations possibles : les paramètres influent peu sur la performance du classeur. Dès lors que les arbres sont suffisamment profonds, qu'il y a assez d'estimateurs agrégés et que le taux d'apprentissage et correct, les résultats sont vite optimaux. La fonction de recherche exhaustive nous a renvoyé la combinaison de paramètres présentée dans la Table \ref{best_params_ada} (pour un \emph{f1-score} moyen maximal de 0,947).
 
-\begin{table}[h]
+\begin{table}
 \centering
 \begin{tabular}{ll}
 paramètre & valeur \\
@@ -539,7 +559,7 @@ paramètre & valeur \\
 \caption{Paramètres optimaux pour AdaBoost\label{best_params_ada}}
 \end{table}
 
-\begin{figure}[h]
+\begin{figure}
 \centering
 \includegraphics[width=\textwidth]{img/adaboost_depth.png}
 \caption{Évolution du score pour AdaBoost selon la profondeur maximale de l'arbre de décision\label{adaboost_depth}}
@@ -550,7 +570,7 @@ paramètre & valeur \\
 L'algorithme du SVM est initialement défini pour la discrimination d'une variable qualitative binaire; c'est à dire des variables contenant deux éléments non ordonnables (eg la variable sexe contient les éléments masculin et féminin. Il est à ce titre particulièrement indiqué dans le cas de problèmes linéairement séparables. On cherche donc un hyperplan capable de séparer l'espace vectoriel en deux. Or, nous sommes en présence d'un problème à trois classes. Nous ne pouvons donc pas trouver un unique hyperplan qui séparerait notre espace. Nous allons donc devoir adapter la méthode générale. Plusieurs adaptations existent. Parmi ces dernières, nous avons considéré les deux suivantes :
 
 \begin{description}
-\item["One-Versus-the-Rest" :] la plus simple et la plus ancienne des méthodes d'otpimisation indirectes. Il s'agit d'une extension au cas multiclasses proposée par Vapnik \cite{Vapnik}. Elle consiste à construire $p$ estimateurs binaires (à vecteurs de supports) pour classifier $p$ classes. S'il s'agit d'une extension facile à mettre en place, cette méthode risque d'introduire artificiellement un déséquilibre des classes dans la construction des modèles individuels. Dans notre cas, nous avons 70847 points représentants des voitures contre 202 représentants des motos. Aussi, la méthode SVM obtiendra des moins bons résutlats pour séparer ces deux classes.
+\item["One-Versus-the-Rest"] La plus simple et la plus ancienne des méthodes d'otpimisation indirectes. Il s'agit d'une extension au cas multiclasses proposée par Vapnik \cite{Vapnik}. Elle consiste à construire $p$ estimateurs binaires (à vecteurs de supports) pour classifier $p$ classes. S'il s'agit d'une extension facile à mettre en place, cette méthode risque d'introduire artificiellement un déséquilibre des classes dans la construction des modèles individuels. Dans notre cas, nous avons 70847 points représentants des voitures contre 202 représentants des motos. Aussi, la méthode SVM obtiendra des moins bons résutlats pour séparer ces deux classes.
 
 \begin{figure}
 \centering
@@ -559,11 +579,11 @@ L'algorithme du SVM est initialement défini pour la discrimination d'une variab
 \caption{Problème multi-classe et séparation "One-Versus-the-Rest"}
 \end{figure}
 
-\item[Méthode directe de \textbf{Crammer et Singer} \cite{Crammer} :] contrairement aux schémas de décomposition indirect (comme la méthode "OVR", cette approche consiste à séparer les classes en résolvant un unique problème d'optimisation. Ainsi, cela revient à résoudre un problème d'optimisation à $(p-1)\times n$ contraintes (où $p$ est le nombre de classe et $n$ le nombre d'observations).
+\item[Méthode directe de Crammer et Singer \cite{Crammer}] À l'encontre des schémas de décomposition indirect (comme la méthode "OVR"), cette approche cons\-iste à séparer les classes en résolvant un unique problème d'optimisation. Ainsi, cela revient à résoudre un problème d'optimisation à $n(p-1)$ contraintes (où $p$ est le nombre de classe et $n$ le nombre d'observations).
 \end{description}
 Comme pour les méthodes précédentes, la Table \ref{params_svm} liste les paramètres testés.
 
-\begin{table}[h]
+\begin{table}
 \centering
 \begin{tabular}{ll}
 paramètre & ensemble des valeurs testées \\
@@ -582,7 +602,7 @@ En effet, comme nous avons trois classes pour deux caractéristiques de sélecti
 
 Nous avons obtenu le meilleur résultat avec la combinaison des paramètres présentée dans la Table \ref{best_params_svm}.
 
-\begin{table}[h]
+\begin{table}
 \centering
 \begin{tabular}{ll}
 paramètre & valeur \\
@@ -610,11 +630,11 @@ L'objectif final de ce projet est la mise à disposition d'une fonction de préd
 Cette fonction est déjà implémentée dans le code, il s'agit de la méthode \texttt{predict} de la classe \texttt{Detector}. Le processus pour initialiser cette fonction est le suivant :
 \begin{enumerate}
 \item Créer un objet \texttt{Detector} en chargeant les bases de données récoltées
-\item Entraîner un \emph{classifier}, dont les paramètres sont ceux résultant de l'optimisation effectuée précédemment, avec ces données
-\item Attribuer ce \emph{classifier} en tant que \emph{classifier} de prédiction pour le \texttt{Detector}
+\item Entraîner un classeur, dont les paramètres sont ceux résultant de l'optimisation effectuée précédemment, avec ces données
+\item Attribuer ce classeur en tant que classeur de prédiction pour le \texttt{Detector}
 \item Sauvegarder la méthode \texttt{predict}
 \end{enumerate}
-La dernière étape de ce processus consiste en la sérialisation de la méthode, à l'aide du module \texttt{pickle}. La méthode, contenant une référence à l'estimateur sélectionné, possède tous les éléments pour effectuer les prédictions. Son utilisation peut alors être résumée à l'aide de la fonction suivante :
+La dernière étape de ce processus consiste en la sérialisation de la méthode, à l'aide du module \texttt{pickle}. La méthode, contenant une référence au classeur sélectionné, possède tous les éléments pour effectuer les prédictions. Son utilisation peut alors être résumée à l'aide de la fonction suivante :
 \begin{verbatim}
 def classify(class_, length, width):
     import pickle
@@ -637,42 +657,8 @@ Cette fonction est autonome et portable; elle ne nécessite qu'un fichier conten
 \end{figure}
 
 
-\begin{thebibliography}{9}
-\bibitem{blinding}
-Hocheol Shin, Dohyun Kim, Yujin Kwon, and Yongdae Kim
-\textit{Illusion and Dazzle: Adversarial Optical Channel Exploits against Lidars for Automotive Applications}, Korea Advanced Institute of Science and Technology 
-
-\bibitem{ref1}
-Deepika, N AND Sajith Variyar, V. V., \textit{Obstacle classification and detection for vision based navigation for autonomous driving}, Addison Wesley, Massachusetts, IEEEl, 2017.
-         
-\bibitem{ref2}
-Gerard Gibbs and Huamin Jia and Irfan Madani, \textit{Obstacle Detection with Ultrasonic Sensors and Signal Analysis Metrics}, Transportation Research Procedia, 2017.
-
-\bibitem{Vapnik}
-Vapnik, V.: \textit{Statistical Learning Theory}. Wiley, New York (1998).
-
-\bibitem{Crammer}
-Crammer, K., Singer, Y.: \textit{On the algorithmic implementation of multiclass kernel-based vector machines}. J. Mach. Learn. Res. 2, 265–292 (2001)
-
-\bibitem{work1}
-Mourad Bendjaballah, Stevica Graovac and Mohammed Amine Boulahlib, \textit{A classification of on-road obstacles according to their relative velocities}, EURASIP Journal on Image and Video Processing (2016) 
-
-\bibitem{work2}
-Danil V. Prokhorov, \textit{Road obstacle classification with attention windows}, 2010 IEEE Intelligent Vehicles Symposium
-
-\bibitem{work3}
-Michael S. Darms, Paul E. Rybski, Christopher Baker, and Chris Urmson, \textit{Obstacle Detection and Tracking for the Urban Challenge}, IEEE TRANSACTIONS ON INTELLIGENT TRANSPORTATION SYSTEMS, VOL. 10, NO. 3, SEPTEMBER 2009
-
-\bibitem{work4}
-Liang, Mingpei, et al. \textit{Counting and classification of highway vehicles by regression analysis.} IEEE Transactions on Intelligent Transportation Systems 16.5 (2015): 2878-2888.
-
-\bibitem{carquery}
-CarQuery, The Vehicle Data API \& Database [en ligne]. Disponible sur \url{http://www.carqueryapi.com} [20.06.2018]
-
-\bibitem{pandas}
-pandas, Python Data Analysis Library [en ligne]. Disponible sur \url{http://pandas.pydata.org} [20.06.2018]
-
-\end{thebibliography}
+\bibliography{bibliographie}
+\bibliographystyle{unsrt}
 
 \listoffigures
 \begingroup
