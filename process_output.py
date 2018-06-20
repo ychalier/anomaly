@@ -69,8 +69,8 @@ if sys.argv[1] == "mlp":
     ax.set_xlabel("Taille des couches cachées")
     ax.set_ylabel("Nombre de couches cachées")
     ax.set_zlabel("Score F1")
-    plt.legend(handlelist, activation_color.keys(), loc='best', title="Fonction d'activation")
-    plt.title("Evolution du score du MLP selon la fonction d'activation'")
+    plt.legend(handlelist, activation_color.keys(), loc='upper center', bbox_to_anchor=(.5, -.05), title="Fonction d'activation")
+    plt.title("Evolution du score du MLP selon la fonction d'activation")
     plt.savefig('mlp_activation.png')
 
     fig = plt.figure(figsize=(12, 12))
@@ -84,7 +84,7 @@ if sys.argv[1] == "mlp":
     ax.set_xlabel("Taille des couches cachées")
     ax.set_ylabel("Nombre de couches cachées")
     ax.set_zlabel("Score F1")
-    plt.legend(handlelist, solver_color.keys(), loc='best', title="Algorithme de descente du gradient")
+    plt.legend(handlelist, solver_color.keys(), loc='upper center', bbox_to_anchor=(.5, -.05), title="Algorithme de descente du gradient")
     plt.title("Evolution du score du MLP selon la fonction de descente du gradient")
     plt.savefig('mlp_solver.png')
 
@@ -127,6 +127,6 @@ elif sys.argv[1] == "ada":
     ax.set_xlabel("learning rate")
     ax.set_ylabel("n_estimators")
     ax.set_zlabel("Score F1")
-    plt.legend(handlelist, depth_colors.keys(), loc='best', title="Profondeur maximale")
+    plt.legend(handlelist, depth_colors.keys(), loc='upper center', bbox_to_anchor=(.5, -.05), title="Profondeur maximale")
     plt.title("Evolution du score de AdaBoost selon la profondeur maximale des DecisionTrees")
     plt.savefig('adaboost_depth.png')
