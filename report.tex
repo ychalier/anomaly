@@ -5,7 +5,6 @@
 
 \usepackage{multirow}
 \usepackage{graphicx}
-% \usepackage{algorithmic}
 \usepackage{amsmath}
 \usepackage{hyperref}
 
@@ -116,7 +115,7 @@ Enfin, contrairement aux techniques citées jusqu'alors qui utilisent des techni
 
 Au préalable, nous nous assurons de trouver des bases de données avec les dimensions pour chacune des classes pour entraîner et valider notre modèle. 
 
-Ensuite, nous proposerons une méthodologie de sélection d'un algorithme d'apprentissage supervisé en évaluant leur précision et leur efficacité respectives. Dans ce travail, nous avons considéré les algorithmes suivant: 
+Ensuite, nous proposerons une méthodologie de sélection d'un algorithme d'apprentissage supervisé en évaluant leur précision et leur efficacité respectives. Dans ce travail, nous avons considéré les algorithmes suivant : 
 
 \begin{itemize}
 \label{classifiers}
@@ -128,7 +127,7 @@ Ensuite, nous proposerons une méthodologie de sélection d'un algorithme d'appr
 
 ~\par
 
-\noindent Le pseudo code \ref{alg:prediction} permet de résumer le déroulé du processus de prédiction.
+\noindent L'objectif final de ce projet est la mise à disposition d'une fonction de prédiction autonome permettant de classer des données relevées par un ensemble de capteurs en malicieux / non-malicieux. Le pseudo code \ref{alg:prediction} permet de résumer le déroulé du processus de prédiction.
 
 \RestyleAlgo{boxruled}
 \begin{algorithm}[h]
@@ -480,7 +479,7 @@ Ces tables sont, à la manière des tables en SQL, liées par une clé primaire 
 \item[alpha] Pénalité de régularisation (en utilisant la norme $l_2$)
 \item[activation] Fonction d'activation du réseau neuronal
 \item[solver] Algorithme de descente du gradient
-\item[hidden layers size] Nombre et taille des couches internes du réseau
+\item[hidden layers size] Nombre et taille des couches cachées du réseau
 \end{description}
 
 \begin{table}
@@ -497,23 +496,11 @@ paramètre & ensemble des valeurs testées \\
 \caption{Liste des paramètres testés pour le multi-layered perceptron\label{params_mlp}}
 \end{table}
 
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{img/mlp_activation.png}
-\caption{Évolution du score pour MLP selon la fonction d'activation\label{mlp_activation}}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{img/mlp_solver.png}
-\caption{Évolution du score pour MLP selon l'algorithme de descente du gradient\label{mlp_solver}}
-\end{figure}
-
 L'exploitation des résultats est rendue très difficile par le manque de consistance des scores. Cependant, nous avons pu remarqués que des paramètres comme la régularisation (\texttt{alpha}) ou la taille et nombre de \emph{layers} n'avaient que peu d'influence sur les résultats. Par contre, deux éléments semblent ce dégager : \begin{itemize}
-\item la tangente hyperbolique comme fonction d'activation
-\item \emph{lbfgs} comme méthode du gradient (la documentation de sklearn prédit cette préférence lorsqu'il y a peu de données à exploiter)
+\item la tangente hyperbolique comme fonction d'activation (Figure \ref{mlp_activation})
+\item \emph{lbfgs} comme méthode du gradient (la documentation de sklearn prédit cette préférence lorsqu'il y a peu de données à exploiter) (Figure \ref{mlp_solver})
 \end{itemize}
-Enfin, la Table \ref{best_params_mlp} donne les résultats donnés par la recherche exhaustive et validation croisée (pour un \emph{f1-score} moyen maximal de 0.937).
+Enfin, la Table \ref{best_params_mlp} donne les résultats donnés par la recherche exhaustive et validation croisée (pour un \emph{f1-score} moyen maximal de 0.937, ce qui est très prometteur).
 
 \begin{table}
 \centering
@@ -528,6 +515,20 @@ paramètre & valeur \\
 \end{tabular}
 \caption{Paramètres optimaux pour MLP\label{best_params_mlp}}
 \end{table}
+
+\paragraph{Remarque} Sur les Figures \ref{mlp_activation} et \ref{mlp_solver}, nous pouvons observer une "barre" en (0,0). Ces points correspondent aux tests avec 0 couches cachées (qui sont, par convention, de taille nulle). Les résultats ne sont donc pas étalés comme pour les autres tailles.
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{img/mlp_activation.png}
+\caption{Évolution du \emph{f1-score} pour MLP selon la fonction d'activation\label{mlp_activation}}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{img/mlp_solver.png}
+\caption{Évolution du \emph{f1-score} pour MLP selon l'algorithme de descente du gradient\label{mlp_solver}}
+\end{figure}
 
 \subsection{AdaBoost}
 
@@ -545,7 +546,7 @@ paramètre & ensemble des valeurs testées \\
 \caption{Liste des paramètres testés pour AdaBoost\label{params_ada}}
 \end{table}
 
-Ici, il y a peu d'interprétations possibles : les paramètres influent peu sur la performance du classeur. Dès lors que les arbres sont suffisamment profonds, qu'il y a assez d'estimateurs agrégés et que le taux d'apprentissage et correct, les résultats sont vite optimaux. La fonction de recherche exhaustive nous a renvoyé la combinaison de paramètres présentée dans la Table \ref{best_params_ada} (pour un \emph{f1-score} moyen maximal de 0,947).
+Ici, il y a peu d'interprétations possibles : les paramètres influent peu sur la performance du classeur. Dès lors que les arbres sont suffisamment profonds, qu'il y a assez d'estimateurs agrégés et que le taux d'apprentissage est correct (supérieur à 0.1), les résultats sont vite optimaux. La fonction de recherche exhaustive nous a renvoyé la combinaison de paramètres présentée dans la Table \ref{best_params_ada} (pour un \emph{f1-score} moyen maximal de 0,947, proche de celui du MLP, tout aussi prometteur).
 
 \begin{table}
 \centering
@@ -562,7 +563,7 @@ paramètre & valeur \\
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{img/adaboost_depth.png}
-\caption{Évolution du score pour AdaBoost selon la profondeur maximale de l'arbre de décision\label{adaboost_depth}}
+\caption{Évolution du \emph{f1-score} pour AdaBoost selon la profondeur maximale de l'arbre de décision\label{adaboost_depth}}
 \end{figure}
 
 \subsection{SVM}
@@ -634,19 +635,28 @@ Cette fonction est déjà implémentée dans le code, il s'agit de la méthode \
 \item Attribuer ce classeur en tant que classeur de prédiction pour le \texttt{Detector}
 \item Sauvegarder la méthode \texttt{predict}
 \end{enumerate}
-La dernière étape de ce processus consiste en la sérialisation de la méthode, à l'aide du module \texttt{pickle}. La méthode, contenant une référence au classeur sélectionné, possède tous les éléments pour effectuer les prédictions. Son utilisation peut alors être résumée à l'aide de la fonction suivante :
+La dernière étape de ce processus consiste en la sérialisation de la méthode, à l'aide du module Pickle. Ce module permet d'écrire octet par octet la fonction telle qu'elle est représentée dans la RAM de Python, pour pouvoir la recharger plus tard et l'appeler telle une fonction normale. En effet, la méthode contient une référence au classeur sélectionné (en attribut de l'objet référent). Par un effet de fermeture\footnote{La fonction utilise des variables indépendantes (utilisées localement mais définies dans la portée englobante). Autrement dit, ces fonctions se souviennent de l'environnement dans lequel elles ont été créées.}, cette valeur sera aussi enregistrée lors de la sérialisation de la méthode. La fonction possède donc tous les éléments pour effectuer les prédictions. Elle est stockée dans un fichier \emph{anomaly\_classifier.clf}. Son utilisation peut alors être résumée à l'aide de la fonction suivante :
 \begin{verbatim}
 def classify(class_, length, width):
     import pickle
+    
+    # Ouverture du fichier contenant la fonction
+    # en mode de lecture binaire
     file = open('anomaly_classifier.clf', 'rb')
+    
+    # Chargement du contenu du fichier dans la RAM,
+    # et stockage de la référence de la fonction
+    # dans la variable fun
     fun = pickle.load(file)
     file.close()
+    
+    # Classification
     if fun(class_, length, width):
         return "malicious"
     else:
         return "non-malicous"
 \end{verbatim}
-Cette fonction est autonome et portable; elle ne nécessite qu'un fichier contenant la méthode citée précédemment.
+Cette fonction est autonome, elle n'a plus besoin de l'objet \texttt{Detector} pour fonctionner. De plus, elle est portable, puisqu'elle ne nécessite qu'un fichier contenant la méthode citée précédemment, fichier pesant environ 400Ko, ce qui est bien inférieur à la taille des bases de données nécessaires pour entraîner le classeur (14 Mo).
 
 \chapter{Conclusions}
 
