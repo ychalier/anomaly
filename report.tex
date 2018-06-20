@@ -4,7 +4,6 @@
 \usepackage[francais]{babel}
 
 \usepackage{multirow}
-
 \usepackage{graphicx}
 % \usepackage{algorithmic}
 \usepackage{amsmath}
@@ -248,16 +247,16 @@ Comme expliqué précédemment, cette classe stocke les jeux de données utilis�
 \centering
 \begin{tabular}{p{2.3cm} p{3.1cm} p{4.6cm}}
 
-\multirow{6}{*}{Pre-processing}& \multirow{2}{*}{\texttt{clean}} & Étapes 4 et 5 du chargement des données \\
-& \multirow{2}{*}{\texttt{append\_odd\_points}} & Étape 7 du chargement des données \\
-& \multirow{2}{*}{\texttt{format}} & Étapes 8 et 9 du chargement des données \\
+\multirow{6}{*}{Pre-processing}& \multirow{2}{*}{\texttt{clean}} & Étapes 4 et 5 du chargement des bases de données \\
+& \multirow{2}{*}{\texttt{append\_odd\_points}} & Étape 7 du chargement des bases de données \\
+& \multirow{2}{*}{\texttt{format}} & Étapes 8 et 9 du chargement des bases de données \\
 \hline
-& \multirow{2}{*}{\texttt{classify}} & Entraîne un \emph{classifier} et renvoie le score de test\\
+& \multirow{2}{*}{\texttt{classify}} & Entraîne un \emph{classeur} et renvoie le score de test\\
 Interface \par \texttt{sklearn} & \multirow{2}{*}{\texttt{tune\_parameters}} & Trouve le meilleur jeu de paramètres pour un \emph{classifier}\\
 & \multirow{2}{*}{\texttt{predict}} & Fonction finale de prédiction online \\
 \hline
 \multirow{4}{*}{Affichage}& \multirow{2}{*}{\texttt{plot}} & Affiche la matrice de données complètes\\
-& \texttt{plot\_decision\_}\par\texttt{boudaries} & Affiche les régions de décisions d'un \emph{classifier}\\
+& \texttt{plot\_decision\_}\par\texttt{boudaries} & Affiche les régions de décisions d'un \emph{classeur}\\
 
 \end{tabular}
 \caption{Méthodes de la classe \texttt{Detector}\label{methodes_detector}}
@@ -527,10 +526,17 @@ paramètre & valeur \\
 
 \subsection{SVM}
 
-L'algorithme du SVM est initialement défini pour la discrimination d'une variable qualitative binaire. Il est à ce titre particulièrement indiqué dans le cas de problèmes linéairement séparables. Or, nous sommes en présence d'un problème à trois classes. Nous allons donc devoir adapter la méthode générale. Plusieurs adaptations existent. Parmi ces dernières, nous avons considéré les deux suivantes :
+L'algorithme du SVM est initialement défini pour la discrimination d'une variable qualitative binaire; c'est à dire des variables contenant deux éléments non ordonnables (eg la variable sexe contient les éléments masculin et féminin. Il est à ce titre particulièrement indiqué dans le cas de problèmes linéairement séparables. On cherche donc un hyperplan capable de séparer l'espace vectoriel en deux. Or, nous sommes en présence d'un problème à trois classes. Nous ne pouvons donc pas trouver un unique hyperplan qui séparerait notre espace. Nous allons donc devoir adapter la méthode générale. Plusieurs adaptations existent. Parmi ces dernières, nous avons considéré les deux suivantes :
 
 \begin{description}
-\item["One-Versus-the-Rest" :] la plus simple et la plus ancienne des méthodes d'otpimisation indirectes. Il s'agit d'une extension au cas multiclasses proposée par Vapnik \cite{Vapnik}. Elle consiste à construire $p$ estimateurs binaires (à vecteurs de supports) pour classifier $p$ classes. S'il s'agit d'une extension facile à mettre en place, cette méthode risque d'introduire artificiellement un déséquilibre des classes dans la construction des modèles individuels.
+\item["One-Versus-the-Rest" :] la plus simple et la plus ancienne des méthodes d'otpimisation indirectes. Il s'agit d'une extension au cas multiclasses proposée par Vapnik \cite{Vapnik}. Elle consiste à construire $p$ estimateurs binaires (à vecteurs de supports) pour classifier $p$ classes. S'il s'agit d'une extension facile à mettre en place, cette méthode risque d'introduire artificiellement un déséquilibre des classes dans la construction des modèles individuels. Dans notre cas, nous avons 70847 points représentants des voitures contre 202 représentants des motos. Aussi, la méthode SVM obtiendra des moins bons résutlats pour séparer ces deux classes.
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.6]{img/svm.png}
+\includegraphics[scale=0.6]{img/svm_OneVsAll.png}\\
+\caption{Problème multiclasse et séparation selon la méthode "one-Versus-the-Rest}
+\end{figure}
+
 \item[Méthode directe de \textbf{Crammer et Singer} \cite{Crammer} :] contrairement aux schémas de décomposition indirect (comme la méthode "OVR", cette approche consiste à séparer les classes en résolvant un unique problème d'optimisation. Ainsi, cela revient à résoudre un problème d'optimisation à $(p-1)\times n$ contraintes (où $p$ est le nombre de classe et $n$ le nombre d'observations).
 \end{description}
 Comme pour les méthodes précédentes, la Table \ref{params_svm} liste les paramètres testés.
@@ -547,7 +553,7 @@ paramètre & ensemble des valeurs testées \\
 \caption{Liste des paramètres testés pour SVM\label{params_svm}}
 \end{table}
 
-\noindent Nous noterons que pour tous les essais, \texttt{LinearSVC} a eu pour paramètres \begin{center}
+\noindent Pour implémenter cette méthode, nous avons utilisé la fonction linearSVC de la bibiliothèque SKlearn. Cette fonction, similaire à SVC avec le paramètre kernel='linear', est implémenté différement et propose plus de flexibilité dans le choix des pénalités et des fonctions de perte. Elle s'adapte donc mieux à un grand nombre d'échantillons. Pour tous les essais, \texttt{LinearSVC} a eu pour paramètres \begin{center}
 \texttt{penalty='l1'} et \texttt{dual=False}
 \end{center}
 En effet, comme nous avons trois classes pour deux caractéristiques de sélection, il est plus performant de résoudre le problème primal (par défaut, le dual est sélectionné). De plus, \texttt{GridsearchCV} ne permet pas la combinaison de la résolution du problème primal et de la norme 2 comme fonction de pénalisation. %TODO : finir phrase
