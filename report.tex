@@ -114,23 +114,25 @@ Enfin, contrairement aux techniques citées jusqu'alors qui utilisent des techni
 
 \section{Objectifs}
 
-À travers un cas simple, nous cherchons à vérifier l'appartenance d'un objet à une classe (e.g. un véhicule) en utilisant un algorithme de Machine Learning et les dimensions de l'objet. Il s'agit donc de proposer un modèle de classification multi-classes en réalisant un classeur à partir d'un algorithme d'apprentissage supervisé.
+A travers un cas simple, nous cherchons à vérifier l’appartenance d’un objet a` une classe (e.g. un véhicule) en utilisant un algorithme de Machine Learning et les dimensions de l’objet. Il s’agit donc de proposer un modèle de classification multi-classes en réalisant un classeur à partir d’un algorithme d’apprentissage supervisé.
 
-Au préalable, nous nous assurons de trouver des bases de données avec les dimensions pour chacune des classes pour entraîner et valider notre modèle. 
+Au préalable un travail de préparation est nécessaire. Ainsi, nous nous assurons de trouver des bases de données (cf. Figure \ref{fig:structure} module A) avec les dimensions pour chacune des classes pour entraîner et valider notre modèle.
 
-Ensuite, nous proposerons une méthodologie de sélection d'un algorithme d'apprentissage supervisé en évaluant leur précision et leur efficacité respectives. Dans ce travail, nous avons considéré les algorithmes suivant : 
-
+Ensuite, nous proposerons une méthodologie de sélection d’un algorithme d’apprentissage supervisé en  évaluant leur précision et leur efficacité respectives sur des critères détaillés dans la partie 2.4 (cf. Figure \ref{fig:structure} module D). Dans ce travail, nous avons considéré les algorithmes suivant :
 \begin{itemize}
-\label{classifiers}
-\item Réseau de Neurones;
+\label{section:classifiers}
+\item Réseau de Neurones ; 
 \item Adaboost;
 \item SVM;
 \item Random Forest.
 \end{itemize}
+\medskip
+
+\noindent L'objectif final de ce projet est la mise à disposition d’une fonction de prédiction en-ligne (cf. Figure \ref{fig:structure} module B) permettant de classer des données relevées par un ensemble de capteurs en malicieux / non-malicieux. Le pseudo code \ref{alg:prediction} permet de résumer le déroulé du processus de prédiction. 
+
 
 ~\par
 
-\noindent L'objectif final de ce projet est la mise à disposition d'une fonction de prédiction autonome permettant de classer des données relevées par un ensemble de capteurs en malicieux / non-malicieux. Le pseudo code \ref{alg:prediction} permet de résumer le déroulé du processus de prédiction.
 
 \RestyleAlgo{boxruled}
 \begin{algorithm}[h]
@@ -149,6 +151,12 @@ Ensuite, nous proposerons une méthodologie de sélection d'un algorithme d'appr
 \eSi{fonction(classe\textsubscript{$i$}, longueur\textsubscript{$i$}, largeur\textsubscript{$i$})}{\Retour{"malicieux"}}{\Retour{"non-malicieux"}}
 \caption{Fonction de prédiction\label{alg:prediction}}
 \end{algorithm}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{img/structure.png}
+\caption{Schématisation du fonctionnement global du détecteur\label{fig:structure}}
+\end{figure}
 
 \chapter{Démarche et stratégie}
 
@@ -177,13 +185,19 @@ Après un premier affichage des données (Figure \ref{first_plot}), il est appar
 
 \begin{figure}
 \centering
+\includegraphics[width=\textwidth]{img/first_plot.png}
+\caption{Premier affichage des données\label{first_plot}}
+\end{figure}
+
+\begin{figure}
+\centering
 \includegraphics[width=\textwidth]{img/screen_shape.png}
 \caption{Capture d'écran du nombre de lignes avant et après élagage\label{screen_shape}}
 \end{figure}
 
 Manuellement, nous avons alors défini des zones simples (rectangulaires) en tant que régions de décision de la plausibilité des dimensions des véhicules (Table \ref{regions_decision_manuelles_valeurs}). Ces zones ont été définies au jugé, afin d'encadrer le plus de points valides sans toutefois englober une zone de l'espace trop large. Une approche pour déterminer ces seuils peut être l'utilisation des records de taille enregistrés au cours de l'histoire.
 
-\begin{table}
+\begin{table}[h]
 \centering
 \begin{tabular}{llll}
 cadre & validité & intervalle de longueur & intervalle de largeur \\
@@ -197,15 +211,28 @@ gris & malicieux & 5,25 à 6,5 mètres & 1,4 à 1,65 mètres \\
 
 Hors de la zone verte, et dans les deux cadres gris, nous avons alors généré aléatoirement 700 points définis comme malicieux. La Figure \ref{regions_decision_manuelles_plot} représente l'affichage de tous les points décrits plus tôt ainsi que des régions de décision. Ainsi faite, notre classification possède, sur le jeu d'entraînement, une précision de 97,83\%, et une précision de 97,31\%. Ces scores peuvent sembler suffisants, mais les régions de décisions montrées dans la Figure \ref{regions_decision_manuelles_plot} montrent qu'il y a des zones mortes (par exemple, pour une largeur supérieure à 2,1 mètres et une longueur supérieure à 5 mètres, dans lesquelles un attaquant pourrait positionner ses points malicieux. Ce modèle présente donc de l'\emph{underfitting}.
 
-\begin{figure}
+\begin{figure}[hb]
 \centering
-\includegraphics[width=\textwidth]{img/first_try.png}
+\includegraphics[width=.8\textwidth]{img/first_try.png}
 \caption{Régions de décision manuelles pour des dimensions de voitures\label{regions_decision_manuelles_plot}}
 \end{figure}
 
 \section{Recherche des bases de données}
 
-%TODO 
+Dans cette partie nous décrivons les bases de données que nous avons utilisé pour construire notre modèle. Pour ce faire, nous avons exploité quatre jeux de données pour les différentes classes, à savoir: 
+\begin{itemize}
+\item Pour les voiture, nous avons utilisé la base de données CarQuery \cite{carquery}, qui présente 70847 références de véhicules, comprenant notamment l’année, le modèle et des spécifications diverses comme la longueur ou la largeur. 
+\item Pour les motos, nous avons utilisé deux bases de données \cite{moto1} \cite{moto2} que nous avons concaténées, qui présentent 202 références de motos ainsi que leurs dimensions.
+\item Pour les piétons, nous avons utilisé les résultats d’un travail de recherche\cite{doi:10.1080/10691898.2003.11910711}, qui présente les dimensions de 507 humains, comprenant notamment leurs tailles, et leurs largeur d’épaule.
+\end{itemize}
+\medskip
+Nous disposons donc des données suivantes:
+
+\begin{figure}[hb]
+\includegraphics[width=\textwidth]{img/input_dataset.png}
+\caption{Affichage des données brutes}
+\end{figure}
+ 
 
 \section{Environnement de travail}
 
@@ -261,7 +288,7 @@ Enfin, on procède à la division de chacune de ces matrices en deux matrices, u
 
 Comme expliqué précédemment, cette classe stocke les jeux de données utilisés pour l'entraînement et la prédiction. Elle va aussi permettre de centraliser les tests de classeurs, et l'affichage des données. Ses méthodes (Table \ref{methodes_detector}) sont donc une sorte d'API pour la réalisation de la fonction de prédiction finale, objectif du projet.
 
-\begin{table}
+\begin{table}[h]
 \centering
 \begin{tabular}{p{2.3cm} p{3.1cm} p{4.6cm}}
 
@@ -294,7 +321,11 @@ Pour définir de manière formelle une matrice de confusion, il convient d'intro
 \item FN (Faux négatif): item déclaré négatif alors qu'il était en réalité positif
 \item TN (Vrai négatif): item correctement détecté comme négatif
 \end{itemize}
-\medskip
+
+~\par
+
+~\par
+
 Ces derniers permettent de définir la classification, correcte ou non, des objets données en entrée de notre fonction. Nous pouvons dès lors construire la matrice suivante : 
 
 \begin{tabular}{ l | l | c | c | c c}
@@ -448,7 +479,7 @@ Notre algorithme de recherche des paramètres est basé sur une fonction de scik
 
 Cette fonction utilise de plus la technique de validation croisée. En quelques mots, cette technique consiste en la division des données d'entraînement en $C$ sous-échantillons. De façon cyclique, 1 sous-échantillon servira à la validation du modèle, tandis que les $C-1$ autres permettront l'entraînement du modèle. On répète la technique de validation croisée $C$ fois, afin que chaque sous-échantillon soit utilisé pour la validation une fois. La performance du modèle est ensuite évaluée en moyennant les scores de chaque itération. Cette méthode permet de prédire l'efficacité d'un classeur en évitant tout phénomène d'\emph{overfitting} sans avoir à disposer d'un jeu de test indépendant.
 
-La fonction d'évaluation du score utilisée par \texttt{GridSearchCV} est par ailleurs paramétrable. Dans le cadre de notre projet, nous nous intéressons au \emph{f1-score} pour évaluer un classeur, et nous souhaitions aussi extraire les tendances de l'évolution du score en fonction des différents paramètres testés. Nous pourrons alors interpréter l'impact des différents paramètres, et expliquer leur rôle. Nous avons donc implémenté notre propre fonction d'évaluation, prenant en paramètre le classeur à évaluer (Section \ref{classifiers}) et les matrices de \emph{features} et de \emph{labels} (Section \ref{features_matrix}) à utiliser pour cela. Cette fonction effectue les opérations suivantes :
+La fonction d'évaluation du score utilisée par \texttt{GridSearchCV} est par ailleurs paramétrable. Dans le cadre de notre projet, nous nous intéressons au \emph{f1-score} pour évaluer un classeur, et nous souhaitions aussi extraire les tendances de l'évolution du score en fonction des différents paramètres testés. Nous pourrons alors interpréter l'impact des différents paramètres, et expliquer leur rôle. Nous avons donc implémenté notre propre fonction d'évaluation, prenant en paramètre le classeur à évaluer (Section \ref{section:classifiers}) et les matrices de \emph{features} et de \emph{labels} (Section \ref{features_matrix}) à utiliser pour cela. Cette fonction effectue les opérations suivantes :
 
 \begin{enumerate}
 \item Classification des éléments du jeu de test (ici, le sous-échantillon mentionné dans la validation croisée). Production d'une matrice de \emph{labels}, contenant les classes résultant de la classification.
@@ -459,9 +490,13 @@ La fonction d'évaluation du score utilisée par \texttt{GridSearchCV} est par a
 
 L'étape 3 consiste en l'écriture dans un fichier d'une ligne contenant la description détaillée des paramètres du classeur ainsi que les résultats des scores. La fonction de recherche exhaustive étant fortement parallèle, chaque processus écrit dans son propre fichier. Une fois tous les tests effectués, ces fichiers sont concaténés en un grand fichier. Cette méthode d'enregistrement continu permet en outre de sauvegarder les résultats des tests successifs des itérations de la validation croisée au fur et à mesure de l'exécution du programme, ce qui se révèlera important lors d'interruptions prématurées de cette exécution.
 
+~\par
+
 En effet, ce fut l'un de nos plus importants problèmes lors de ce projet. Pour le Multi-layered Perceptron, il y avait beaucoup de paramètres en jeu, et la complexité combinatoire mélangée avec le temps de convergence des réseaux neuronaux ont rendu le temps d'exécution du script interminable. Notre plus long essai eut lieu sur le serveur InfRes \href{http://lame10.enst.fr}{lame10} doté pourtant de 80 CPUs, sur une durée de plus de 18 heures ; l'intégralité des tests n'aura pu être effectuée, nous avons dû manuellement interrompre l'exécution.
 
-Enfin, du grand fichier généré contenant l'historique de tous les tests passés sont ensuite extraites les tables de score CSV qui seront présentées dans les paragraphes suivant. Ces dernières sont disponibles à l'adresse \url{https://perso.telecom-paristech.fr/ychalier/anomaly/params/}. Pour chaque phase de test, le script génère :
+~\par
+
+Enfin, du grand fichier généré contenant l'historique de tous les tests passés sont ensuite extraites les tables de score CSV\footnote{Ces dernières sont disponibles à l'adresse \url{perso.telecom-paristech.fr/ychalier/anomaly/}.} qui seront présentées dans les paragraphes suivant. Pour chaque phase de test, le script génère :
 \begin{itemize}
 \item Un fichier de scores (TPR, FPR, TNR, FNR, PPV, \emph{f1-score}, temps de prédiction)
 \item Pour chaque classe différente de classeur, un fichier contenant tous les jeux de paramètres
@@ -483,7 +518,7 @@ Ces tables sont, à la manière des tables en SQL, liées par une clé primaire 
 \item[hidden layers size] Nombre et taille des couches cachées du réseau
 \end{description}
 
-\begin{table}
+\begin{table}[h]
 \centering
 \begin{tabular}{l l}
 paramètre & ensemble des valeurs testées \\
@@ -503,7 +538,7 @@ L'exploitation des résultats est rendue très difficile par le manque de consis
 \end{itemize}
 Enfin, la Table \ref{best_params_mlp} donne les résultats donnés par la recherche exhaustive et validation croisée (pour un \emph{f1-score} moyen maximal de 0.937, ce qui est très prometteur).
 
-\begin{table}
+\begin{table}[h]
 \centering
 \begin{tabular}{ll}
 paramètre & valeur \\
@@ -535,7 +570,7 @@ paramètre & valeur \\
 
 Comme pour MLP, la Table \ref{params_ada} liste les paramètres testés et la Figure \ref{adaboost_depth} montre l'évolution du score en fonction de ces paramètres.
 
-\begin{table}
+\begin{table}[h]
 \centering
 \begin{tabular}{ll}
 paramètre & ensemble des valeurs testées \\
@@ -549,7 +584,7 @@ paramètre & ensemble des valeurs testées \\
 
 Ici, il y a peu d'interprétations possibles : les paramètres influent peu sur la performance du classeur. Dès lors que les arbres sont suffisamment profonds, qu'il y a assez d'estimateurs agrégés et que le taux d'apprentissage est correct (supérieur à 0.1), les résultats sont vite optimaux. La fonction de recherche exhaustive nous a renvoyé la combinaison de paramètres présentée dans la Table \ref{best_params_ada} (pour un \emph{f1-score} moyen maximal de 0,947, proche de celui du MLP, tout aussi prometteur).
 
-\begin{table}
+\begin{table}[h]
 \centering
 \begin{tabular}{ll}
 paramètre & valeur \\
@@ -561,9 +596,9 @@ paramètre & valeur \\
 \caption{Paramètres optimaux pour AdaBoost\label{best_params_ada}}
 \end{table}
 
-\begin{figure}
+\begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{img/adaboost_depth.png}
+\includegraphics[width=.63\textwidth]{img/adaboost_depth.png}
 \caption{Évolution du \emph{f1-score} pour AdaBoost selon la profondeur maximale de l'arbre de décision\label{adaboost_depth}}
 \end{figure}
 
@@ -573,21 +608,21 @@ L'algorithme du SVM est initialement défini pour la discrimination d'une variab
 
 \begin{description}
 
-\item["One-Versus-the-Rest"] La plus simple et la plus ancienne des méthodes d'otpimisation indirectes. Il s'agit d'une extension au cas multiclasses proposée par Vapnik \cite{Vapnik}. Elle consiste à construire $p$ estimateurs binaires (à vecteurs de supports) pour classifier $p$ classes. S'il s'agit d'une extension facile à mettre en place, cette méthode risque d'introduire artificiellement un déséquilibre des classes dans la construction des modèles individuels. Dans notre cas, nous avons 70847 points représentants des voitures contre 202 représentants des motos. Aussi, la méthode SVM obtiendra des moins bons résutlats pour séparer ces deux classes.
+\item["One-Versus-the-Rest"] La plus simple et la plus ancienne des méthodes d'otpimisation indirectes. Il s'agit d'une extension au cas multiclasses proposée par Vapnik \cite{Vapnik}. Elle consiste à construire $p$ estimateurs binaires (à vecteurs de supports) pour classifier $p$ classes (voir Figure \ref{fig:one_versus_rest}). S'il s'agit d'une extension facile à mettre en place, cette méthode risque d'introduire artificiellement un déséquilibre des classes dans la construction des modèles individuels. Dans notre cas, nous avons 70847 points représentants des voitures contre 202 représentants des motos. Aussi, la méthode SVM obtiendra des moins bons résutlats pour séparer ces deux classes.
 
 \begin{figure}
 \centering
 \includegraphics[scale=0.6]{img/svm.png}
 \includegraphics[scale=0.6]{img/svm_OneVsAll.png}
-\caption{Problème multi-classe et séparation "One-Versus-the-Rest"}
+\caption{Problème multi-classe et séparation "One-Versus-the-Rest"\label{fig:one_versus_rest}}
 \end{figure}
 
 \item[Méthode directe de Crammer et Singer \cite{Crammer}] À l'encontre des schémas de décomposition indirect (comme la méthode "OVR"), cette approche cons\-iste à séparer les classes en résolvant un unique problème d'optimisation. Ainsi, cela revient à résoudre un problème d'optimisation à $n(p-1)$ contraintes (où $p$ est le nombre de classe et $n$ le nombre d'observations).
 
 \end{description}
-Comme pour les méthodes précédentes, la Table \ref{params_svm} liste les paramètres testés.
 
-\begin{table}
+
+\begin{table}[h]
 \centering
 \begin{tabular}{ll}
 paramètre & ensemble des valeurs testées \\
@@ -599,13 +634,12 @@ paramètre & ensemble des valeurs testées \\
 \caption{Liste des paramètres testés pour SVM\label{params_svm}}
 \end{table}
 
-\noindent Nous noterons que pour tous les essais, \texttt{LinearSVC} a eu pour paramètres \begin{center}
+Comme pour les méthodes précédentes, la Table \ref{params_svm} liste les paramètres testés. Nous noterons que pour tous les essais, \texttt{LinearSVC} a eu pour paramètres \begin{center}
 \texttt{penalty='l1'} et \texttt{dual=False}
 \end{center}
 En effet, comme nous avons trois classes pour deux caractéristiques de sélection, il est plus performant de résoudre le problème primal (par défaut, le dual est sélectionné). De plus, \texttt{GridsearchCV} ne permet pas la combinaison du %TODO : finir phrase
 
-
-\begin{table}
+\begin{table}[h]
 \centering
 \begin{tabular}{ll}
 paramètre & valeur \\
@@ -633,7 +667,7 @@ Le réseau de neurones possède un score F1 de 0.71, ce qui est assez décevant 
 
 Enfin, le classeur SVM arrive en dernière position. Avec un taux de faux positif de 100\% et de vrais négatifs de 0\%, la méthode donne des résultats plus que décevants. 
 
-\begin{table}
+\begin{table}[h]
 \centering
 \begin{tabular}{r | llllll}
 & \textbf{TPR} & \textbf{FPR} & \textbf{TNR} & \textbf{FNR} & \textbf{PPV} & \textbf{\emph{f1-score}} \\
@@ -687,13 +721,6 @@ Cette fonction est autonome, elle n'a plus besoin de l'objet \texttt{Detector} p
 
 \chapter{Conclusions}
 
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{img/structure.png}
-\caption{Schématisation du fonctionnement global du détecteur}
-\end{figure}
-
-
 
 \bibliography{bibliographie}
 \bibliographystyle{unsrt}
@@ -703,15 +730,5 @@ Cette fonction est autonome, elle n'a plus besoin de l'objet \texttt{Detector} p
 \let\clearpage\relax
 \listoftables
 \endgroup
-
-\appendix
-
-\chapter{Figures complémentaires}
-
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{img/first_plot.png}
-\caption{Premier affichage des données\label{first_plot}}
-\end{figure}
 
 \end{document}

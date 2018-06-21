@@ -83,6 +83,22 @@ Carquery, the vehicle data api \& database.
 \newblock Disponible sur \url{http://www.carqueryapi.com}.
 \newblock Consulté le 2018-06-20.
 
+\bibitem{moto1}
+Motorcycle database 1894-2017, teoalida car database.
+\newblock Disponible sur
+  \url{http://www.teoalida.com/cardatabase/motorcycles/}.
+\newblock Consulté le 2018-06-20.
+
+\bibitem{moto2}
+Motocicliste.
+\newblock Disponible sur \url{http://www.motocicliste.net/moto/db.asp}.
+\newblock Consulté le 2018-06-20.
+
+\bibitem{doi:10.1080/10691898.2003.11910711}
+Grete Heinz, Louis~J. Peterson, Roger~W. Johnson, and Carter~J. Kerk.
+\newblock Exploring relationships in body dimensions.
+\newblock {\em Journal of Statistics Education}, 11(2):null, 2003.
+
 \bibitem{git}
 anomaly.
 \newblock Disponible sur \url{https://github.com/ychalier/anomaly/}.
