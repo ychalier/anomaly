@@ -472,6 +472,8 @@ Ces tables sont, à la manière des tables en SQL, liées par une clé primaire 
 
 \subsection{Multi-layered perceptron}
 
+\label{section:mlp}
+
 À l'aide d'un autre petit script Python, nous avons pu afficher les données récoltées dans les CSV mentionnés plus tôt. Les Figures \ref{mlp_activation} et \ref{mlp_solver} sont le résultat du test pour les paramètres du MLP. La Table \ref{params_mlp} regroupe les différents paramètres testés, à savoir :
 \begin{description}
 \item[learning rate] Taux de modification des poids à chaque mise à jour (i.e. à chaque rétropropagation)
@@ -621,7 +623,33 @@ $$\begin{bmatrix}
 \end{bmatrix}$$
 Il faut tout de même noter que ces résultats sont sujets à des fortes variations.
 
-\section{Étude comparative des performances}
+\section{Performances des classeurs}
+
+En utilisant les paramètres optimaux présentés dans les Tables \ref{best_params_mlp}, \ref{best_params_ada} et \ref{best_params_svm}, nous avons pu entraîner les différents classeurs qui nous intéressaient pour pouvoir comparer leurs performances. Les scores obtenus sont reportés dans la Table \ref{table:scores}.
+
+Le classeur AdaBoost possède le meilleur score F1 des quatre. Juste derrière, la Random Forest semble un très bon choix également, avec tout de même un taux de vrais positifs légèrement inférieur. La Figure \ref{fig:adaboost_contour} représente les régions de décision pour le classeur AdaBoost.
+
+Le réseau de neurones possède un score F1 de 0.71, ce qui est assez décevant compte tenu des scores atteints lors de la recherche des paramètres optimaux (Section \ref{section:mlp}). Le taux de vrais positifs est assez bas (environ 57\%) alors que le taux de faux négatifs est important (43\%).
+
+Enfin, le classeur SVM arrive en dernière position. Avec un taux de faux positif de 100\% et de vrais négatifs de 0\%, la méthode donne des résultats plus que décevants. 
+
+\begin{table}
+\centering
+\begin{tabular}{r | llllll}
+& \textbf{TPR} & \textbf{FPR} & \textbf{TNR} & \textbf{FNR} & \textbf{PPV} & \textbf{\emph{f1-score}} \\
+MLP & 0.5677 & 0.0053 & 0.9947 & 0.4323 & 0.9493 & 0.7105 \\
+AdaBoost & 0.9354 & 0.0103 & 0.9897 & 0.0646 & 0.9411 & 0.9382 \\
+SVM & 0.9657 & 1.0 & 0.0 & 0.0343 & 0.1446 & 0.2515 \\
+Random Forest & 0.9172 & 0.0067 & 0.9933 & 0.0828 & 0.9598 & 0.938 \\
+\end{tabular}
+\caption{Tableau récapitulatif des performances des classeurs\label{table:scores}}
+\end{table}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{img/adaboost_contour.png}
+\caption{Régions de décisions pour AdaBoost\label{fig:adaboost_contour}}
+\end{figure}
 
 \section{Utilisation de la prédiction en-ligne}
 
