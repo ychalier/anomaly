@@ -120,6 +120,8 @@ CQA_Premium.*
 *.ps
 *.lot
 *.lof
+*.bbl
+*.blg
 
 # output classifier
 *.clf
