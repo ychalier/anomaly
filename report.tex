@@ -114,23 +114,22 @@ Enfin, contrairement aux techniques citées jusqu'alors qui utilisent des techni
 
 \section{Objectifs}
 
-À travers un cas simple, nous cherchons à vérifier l'appartenance d'un objet à une classe (e.g. un véhicule) en utilisant un algorithme de Machine Learning et les dimensions de l'objet. Il s'agit donc de proposer un modèle de classification multi-classes en réalisant un classeur à partir d'un algorithme d'apprentissage supervisé.
-
-Au préalable, nous nous assurons de trouver des bases de données avec les dimensions pour chacune des classes pour entraîner et valider notre modèle. 
-
-Ensuite, nous proposerons une méthodologie de sélection d'un algorithme d'apprentissage supervisé en évaluant leur précision et leur efficacité respectives. Dans ce travail, nous avons considéré les algorithmes suivant : 
-
+A travers un cas simple, nous cherchons à vérifier l’appartenance d’un objet a` une classe (e.g. un véhicule) en utilisant un algorithme de Machine Learning et les dimensions de l’objet. Il s’agit donc de proposer un modèle de classification multi-classes en réalisant un classeur à partir d’un algorithme d’apprentissage supervisé.
+Au préalable un travail de préparation est nécessaire. Ainsi, nous nous assurons de trouver des bases de données (cf figure \ref{alg:prediction} module A) avec les dimensions pour chacune des classes pour entraîner et valider notre modèle.
+Ensuite, nous proposerons une méthodologie de sélection d’un algorithme d’apprentissage supervisé en  évaluant leur précision et leur efficacité respectives sur des critères détaillés dans la partie 2.4 (cf figure \ref{alg:prediction} module D). Dans ce travail, nous avons considéré les algorithmes suivant :
 \begin{itemize}
-\label{classifiers}
-\item Réseau de Neurones;
+\item Réseau de Neurones ; 
 \item Adaboost;
 \item SVM;
 \item Random Forest.
 \end{itemize}
+\medskip
+
+\noindent L’objectif final de ce projet est la mise à disposition d’une fonction de prédiction en-ligne (cf figure \ref{alg:prediction} module B) permettant de classer des données relevées par un ensemble de capteurs en malicieux / non-malicieux. Le pseudo code \ref{alg:prediction} permet de résumer le déroulé du processus de prédiction. 
+
 
 ~\par
 
-\noindent L'objectif final de ce projet est la mise à disposition d'une fonction de prédiction autonome permettant de classer des données relevées par un ensemble de capteurs en malicieux / non-malicieux. Le pseudo code \ref{alg:prediction} permet de résumer le déroulé du processus de prédiction.
 
 \RestyleAlgo{boxruled}
 \begin{algorithm}[h]
@@ -149,6 +148,12 @@ Ensuite, nous proposerons une méthodologie de sélection d'un algorithme d'appr
 \eSi{fonction(classe\textsubscript{$i$}, longueur\textsubscript{$i$}, largeur\textsubscript{$i$})}{\Retour{"malicieux"}}{\Retour{"non-malicieux"}}
 \caption{Fonction de prédiction\label{alg:prediction}}
 \end{algorithm}
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{img/structure.png}
+\caption{Schématisation du fonctionnement global du détecteur}
+\end{figure}
 
 \chapter{Démarche et stratégie}
 
@@ -205,7 +210,20 @@ Hors de la zone verte, et dans les deux cadres gris, nous avons alors généré 
 
 \section{Recherche des bases de données}
 
-%TODO 
+Dans cette partie nous décrivons les bases de données que nous avons utilisé pour construire notre modèle. Pour ce faire, nous avons exploité quatre jeux de données pour les différentes classes, à savoir: 
+\begin{itemize}
+\item Pour les voiture, nous avons utilisé la base de données CarQuery \cite{carquery}, qui présente 70847 références de véhicules, comprenant notamment l’année, le modèle et des spécifications diverses comme la longueur ou la largeur. 
+\item Pour les motos, nous avons utilisé deux bases de données \cite{moto1} \cite{moto2} que nous avons concaténées, qui présentent 202 références de motos ainsi que leurs dimensions.
+\item Pour les piétons, nous avons utilisé les résultats d’un travail de recherche\cite{doi:10.1080/10691898.2003.11910711}, qui présente les dimensions de 507 humains, comprenant notamment leurs tailles, et leurs largeur d’épaule.
+\end{itemize}
+\medskip
+Nous disposons donc des données suivantes:
+
+\begin{figure}
+\includegraphics[width=\textwidth]{img/input_dataset.png}
+\caption{Affichage des données brutes}
+\end{figure}
+ 
 
 \section{Environnement de travail}
 
