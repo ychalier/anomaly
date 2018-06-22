@@ -190,4 +190,123 @@ Maximisation du score F1 comme critère de performance
 
 \end{frame}
 
+\section{Paramétrage et résultats}
+
+\begin{frame}{Recherche exhaustive et validation croisée}
+\begin{itemize}
+\item Tests des jeux de paramètres optimaux via la fonction de scikit-learn \texttt{GridSearchCV}
+\item Utilise la validation croisée
+\item Utilisation d'une fonction de score personnalisée \begin{enumerate}
+\item Classification des éléments du jeu de test
+\item Calcul de la matrice de confusion
+\item Sauvegarde des paramètres et du score
+\item Retour du \emph{f1-score}
+\end{enumerate}
+\item Export des données en formats exploitables (JSON, CSV)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Paramètres optimaux}
+\framesubtitle{Perceptron à couches multiples}
+
+\begin{table}
+\tiny
+\centering
+\begin{tabular}{l l}
+paramètre & ensemble des valeurs testées \\
+\hline
+\texttt{learning\_rate} & \texttt{'constant'}, \texttt{'invscaling'} et \texttt{'adaptive'}\\
+\texttt{alpha} & $\{10^{-k} \>\> | \>\> k \in [\![4, 7]\!] \}$ \\
+\texttt{activation} & \texttt{'identity'}, \texttt{'logistic'}, \texttt{'tanh'} et \texttt{'relu'}\\
+\texttt{solver} &\texttt{'lbfgs'}, \texttt{'sgd'} et \texttt{'adam'} \\
+\texttt{hidden\_layer\_sizes} & 0 à 5 \emph{layers}, de taille variant de 1 à 49 \\
+\end{tabular}
+\end{table}
+
+\begin{table}
+\centering
+\begin{tabular}{l l}
+paramètre & valeur optimale \\
+\hline
+\texttt{learning\_rate} & \texttt{'constant'}\\
+\texttt{alpha} & $10^{-6}$ \\
+\texttt{activation} & \texttt{'tanh'}\\
+\texttt{solver} & \texttt{'lbfgs'}\\
+\texttt{hidden\_layer\_sizes} & \texttt{[28, 28, 28]}\\
+\end{tabular}
+\end{table}
+
+\end{frame}
+
+\begin{frame}
+\begin{figure}
+\centering
+\includegraphics[width=.7\textwidth]{img/mlp_activation.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Paramètres optimaux}
+\framesubtitle{AdaBoost}
+\begin{table}
+\tiny
+\centering
+\begin{tabular}{l l}
+paramètre & ensemble des valeurs testées \\
+\hline
+\texttt{n\_estimators} & $[\![1, 99]\!]$ \\
+\texttt{learning\_rate} & $\{k/10 \>\> | \>\> k \in [\![1, 9]\!] \}$ \\
+\texttt{base\_estimator} & Arbres de décision de profondeur maximale dans $[\![2, 9]\!]$ \\
+\end{tabular}
+\end{table}
+
+\begin{table}
+\centering
+\begin{tabular}{l l}
+paramètre & valeur optimale \\
+\hline
+\texttt{n\_estimators} & 46\\
+\texttt{learning\_rate} & 0.3 \\
+\texttt{base\_estimator} & \texttt{max\_depth=}3\\
+\end{tabular}
+\end{table}
+
+\end{frame}
+
+\begin{frame}
+\begin{figure}
+\centering
+\includegraphics[width=.7\textwidth]{img/adaboost_depth.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Performances des classeurs}
+\begin{table}
+\centering
+\begin{tabular}{r | llllll}
+& \emph{TPR} & \emph{FPR} & \emph{TNR} & \emph{FNR} & \emph{PPV} & \emph{f1-score} \\ 
+MLP & 0.568 & 0.005 & 0.995 & 0.432 & 0.949 & 0.711 \\
+AdaBoost & 0.935 & 0.010 & 0.990 & 0.065 & 0.941 & 0.938 \\
+SVM & 0.966 & 1.0 & 0.0 & 0.034 & 0.145 & 0.252 \\
+R. Forest & 0.917 & 0.007 & 0.993 & 0.083 & 0.960 & 0.938 \\
+\end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}{Régions de décision}
+\begin{figure}
+\centering
+\includegraphics[width=.65\textwidth]{img/adaboost_contour.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Prédiction en ligne}
+\begin{enumerate}
+\item Créer un objet \texttt{Detector} en chargeant les bases de données récoltées
+\item Entraîner un classeur, dont les paramètres sont ceux résultant de l'optimisation effectuée précédemment, avec ces données
+\item Attribuer ce classeur en tant que classeur de prédiction pour le \texttt{Detector}
+\item Sauvegarder la méthode \texttt{predict}
+\end{enumerate}
+\end{frame}
+
+
 \end{document}
