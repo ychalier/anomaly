@@ -120,6 +120,55 @@ malicieux & 5,25 à 6,5 mètres & 1,4 à 1,65 mètres \\
 
 \end{frame}
 
+\begin{frame}{Chargement des bases de données (1/2)}
+
+\begin{enumerate}
+\item Pour chaque jeu de données au format CSV
+\begin{enumerate}[{1.}1.]
+\item Lire les colonnes contenant la longueur et la largeur
+\item Renommer ces colonnes en "\texttt{length}" et "\texttt{width}"
+\item Supprimer les lignes incomplètes
+\item Si nécessaire, convertir les données en flottant et en millimètres
+\item Ajouter une colonne contenant la classe correspondant au jeu de données considéré
+\item Appliquer un premier filtre sur la longueur ou la largeur pour supprimer les points extrêmes isolés
+\end{enumerate}
+\item Fusionner toutes les matrices précédentes en une seule
+\item Créer un nouvel objet \texttt{Detector} avec cette matrice en attribut
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}{Chargement des bases de données (2/2)}
+\begin{enumerate}
+\item Supprimer les éventuels redondances
+\item Ajouter une colonne "\texttt{odd}" à la matrice, initialisée à \texttt{False}
+\item \textbf{Générer les données malicieuses}
+\item Ajouter les données malicieuses à la base de données, en rajoutant la colonne "\texttt{odd}" initialisée à \texttt{True}
+\item Remplacer les valeurs des classes (originnellement des chaînes de caractères comme \texttt{"car"} ou \texttt{"human"}) par des entiers
+\item \textbf{Séparer la matrice en un jeu d'entraînement et un jeu de test}
+\item Renvoyer l'objet \texttt{Detector} ainsi initialisé
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Classe \texttt{Detector}}
+\begin{itemize}
+\item Pré-traitement \begin{itemize}
+\item \texttt{clean}
+\item \texttt{append\_odd\_points}
+\item \texttt{format}
+\end{itemize}
+\item Interface scikit-learn \begin{itemize}
+\item \texttt{classify}
+\item \texttt{tune\_parameters}
+\item \texttt{predict}
+\end{itemize}
+\item Affichage \begin{itemize}
+\item \texttt{plot}
+\item  \texttt{plot\_decision\_boudaries}
+\end{itemize}
+\end{itemize}
+\end{frame}
+
 \begin{frame}{Méthodes d'évaluation}
 \framesubtitle{Score F1}
 
@@ -138,7 +187,6 @@ Maximisation du score F1 comme critère de performance
 \begin{equation}
 \text{Recall} = \dfrac{TP}{TP+FN}
 \end{equation}
-
 
 \end{frame}
 
