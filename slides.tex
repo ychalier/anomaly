@@ -4,11 +4,16 @@
 \usepackage[francais]{babel}
 \usepackage{wrapfig}
 \usepackage{amsmath}% http://ctan.org/pkg/amsmath
+\usepackage{graphicx}
+
+\usepackage{multirow}
 
 \usepackage{sansmathaccent}
 \pdfmapfile{+sansmathaccent.map}
 \usepackage{tikz}
 \usepackage{verbatim}
+
+\setbeamertemplate{caption}{\raggedright\insertcaption\par}
 
 \usetheme{Singapore}
 
@@ -22,62 +27,59 @@
 \titlepage
 \end{frame}
 
-\begin{frame}
-  \frametitle{Introduction}
-La détection d'obstacles: un enjeu de sécurité! \\
-\bigskip
-\begin{figure}[b]
-\centering
-\includegraphics[width=0.6\textwidth]{img/sensors.png}
-\caption{Ensemble des capteurs présents dans le véhicule\label{sensors}}
-\end{figure}
+\section{Introduction}
 
-
-\end{frame}
-
-\begin{frame}
-  \frametitle{Attaques potentielles}
-  
-\begin{description}\setlength{\itemsep}{1.5mm}
-\item[Attaque par aveuglement des capteurs]
-
-\begin{figure}
-\includegraphics[scale=0.2,right]{img/blinding.png}
-\end{figure}
-
-\item[Attaque par modification]
-
-\begin{figure}
-\flushright
-\includegraphics[scale=0.3,right]{img/data_flow.png}
-\end{figure}
-
-\end{description}
-
-\end{frame}
-
-
-\begin{frame}
-  \frametitle{Objectifs}
-
-\begin{block}{ }
-Proposition d'un modèle de classification multi-classes en réalisant un classeur à partir d’un algorithme d’apprentissage supervisé
-\end{block}
-
+\begin{frame}{Introduction}
+La détection d'obstacles: un enjeu de sécurité !
 \begin{figure}
 \centering
-\includegraphics[width=0.75\textwidth]{img/structure.png}
-
+\includegraphics[width=.8\textwidth]{img/sensors.png}
+\caption{Ensemble des capteurs présents dans le véhicule}
 \end{figure}
+\end{frame}
+
+\begin{frame}{Attaques potentielles}
+
+\begin{columns}
+
+\begin{column}{0.5\textwidth}
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{img/blinding.png}
+\caption{Attaque par aveuglement des capteurs}
+\end{figure}
+\end{column}
+
+\begin{column}{0.5\textwidth}
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{img/data_flow.png}
+\caption{Attaque par modification}
+\end{figure}
+\end{column}
+
+\end{columns}
 
 \end{frame}
 
+
+\begin{frame}{Objectifs}
+Proposition d'un modèle de classification multi-classes en réalisant un classeur à partir d'un algorithme d'apprentissage supervisé.
+\end{frame}
+
 \begin{frame}
-  \frametitle{Méthodes d'évaluation }
-\medskip
-\framesubtitle{\begin{LARGE}
-Matrice de confusion
-\end{LARGE}}
+\begin{figure}
+\centering
+\includegraphics[width=.9\textwidth]{img/structure.png}
+\end{figure}
+\end{frame}
+
+\section{Démarche de recherche}
+
+\subsection{Méthode d'évaluation}
+
+\begin{frame}{Méthodes d'évaluation}
+\framesubtitle{Matrice de confusion}
 
 \begin{tabular}{ l | l | c | c | c c}
 \multicolumn{2}{c}{} & \multicolumn{2}{c}{Classe réelle} & \\
@@ -94,27 +96,21 @@ Matrice de confusion
 
 \end{frame}
 
-\begin{frame}
-  \frametitle{Méthodes d'évaluation}
-\medskip
-\framesubtitle{\begin{LARGE}
-Score F1
-\end{LARGE}}
+\begin{frame}{Méthodes d'évaluation}
+\framesubtitle{Score F1}
 
-\begin{block}{ }
-\textbf{Objectif:}Maximisation du score F1 comme critère de performance
+\begin{block}{Objectif}
+Maximisation du score F1 comme critère de performance
 \end{block}
 
 \begin{equation}
-	\text{f1-score} = \dfrac{2\times(\text{Recall} \times \text{Precision})}{(\text{Recall} + \text{Precision})} = 2\times\dfrac{PPV \times TPR}{PPV + TPR}
+\text{f1-score} = \dfrac{2\times(\text{Recall} \times \text{Precision})}{(\text{Recall} + \text{Precision})} = 2\times\dfrac{PPV \times TPR}{PPV + TPR}
 \end{equation}
-
-\bigskip
-\bigskip
 
 \begin{equation}
 \text{Precision} = \dfrac{TP}{TP+FP}
-\end{equation}\\
+\end{equation}
+
 \begin{equation}
 \text{Recall} = \dfrac{TP}{TP+FN}
 \end{equation}
