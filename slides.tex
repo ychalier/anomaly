@@ -76,7 +76,31 @@ Proposition d'un modèle de classification multi-classes en réalisant un classe
 
 \section{Démarche de recherche}
 
-\subsection{Méthode d'évaluation}
+\begin{frame}{Première implémentation}
+\begin{itemize}
+\item Extraction des colonnes largeur et longueur de la base de données
+\item Suppression des redondances
+\item Définition de zones de décision arbitraires
+\item Génération des données malicieuses
+\end{itemize}
+\begin{table}
+\centering
+\begin{tabular}{llll}
+validité & intervalle de longueur & intervalle de largeur \\
+\hline
+non-malicieux & 3 à 6,5 mètres & 1,4 à 2,4 mètres \\
+malicieux & 3 à 4,1 mètres & 2,05 à 2,4 mètres \\
+malicieux & 5,25 à 6,5 mètres & 1,4 à 1,65 mètres \\
+\end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}
+\begin{figure}
+\centering
+\includegraphics[width=.8\textwidth]{img/first_try.png}
+\end{figure}
+\end{frame}
 
 \begin{frame}{Méthodes d'évaluation}
 \framesubtitle{Matrice de confusion}
