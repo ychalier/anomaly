@@ -13,7 +13,10 @@
 \usepackage{tikz}
 \usepackage{verbatim}
 
-\setbeamertemplate{caption}{\raggedright\insertcaption\par}
+% \setbeamertemplate{caption}{\raggedright\insertcaption\par}
+\beamertemplatenavigationsymbolsempty
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{footline}[frame number]
 
 \usetheme{Singapore}
 
@@ -34,7 +37,7 @@ La détection d'obstacles: un enjeu de sécurité !
 \begin{figure}
 \centering
 \includegraphics[width=.8\textwidth]{img/sensors.png}
-\caption{Ensemble des capteurs présents dans le véhicule}
+\caption{Fonctions automatisées nécessitant un ou des capteur(s)}
 \end{figure}
 \end{frame}
 
@@ -67,11 +70,22 @@ La détection d'obstacles: un enjeu de sécurité !
 Proposition d'un modèle de classification multi-classes en réalisant un classeur à partir d'un algorithme d'apprentissage supervisé.
 \end{frame}
 
-\begin{frame}
+\begin{frame}{Système de classification}
 \begin{figure}
 \centering
-\includegraphics[width=.9\textwidth]{img/structure.png}
+\includegraphics[width=.7\textwidth]{img/structure.png}
+\caption{Structure du système de classification}
 \end{figure}
+\end{frame}
+
+\begin{frame}{Système de classification}
+\begin{description}
+\item[A | Hors-ligne] Bases de données externes séparées en un jeu d'entraînement et un jeu de test
+\item[B | En-ligne] Conception des messages à classer par les différents capteurs du véhicules
+\item[C | Module de détection] Traitement des données et application de la fonction de classification
+\item[D | Hors-ligne] Paramétrage et entraînement des classeurs ; évaluation des performances
+\item[E | Sorties] Classes de sortie : message valide ou message malicieux
+\end{description} 
 \end{frame}
 
 \section{Démarche de recherche}
@@ -95,41 +109,33 @@ malicieux & 5,25 à 6,5 mètres & 1,4 à 1,65 mètres \\
 \end{table}
 \end{frame}
 
-\begin{frame}
+\begin{frame}{Première implémentation}
 \begin{figure}
 \centering
-\includegraphics[width=.8\textwidth]{img/first_try.png}
+\includegraphics[width=.56\textwidth]{img/first_try.png}
+\caption{Régions de décision arbitraires}
 \end{figure}
 \end{frame}
 
-\begin{frame}{Chargement des bases de données (1/2)}
+\begin{frame}{Chargement des bases de données}
 
 \begin{enumerate}
-\item Pour chaque jeu de données au format CSV
-\begin{enumerate}[{1.}1.]
-\item Lire les colonnes contenant la longueur et la largeur
-\item Renommer ces colonnes en "\texttt{length}" et "\texttt{width}"
-\item Supprimer les lignes incomplètes
-\item Si nécessaire, convertir les données en flottant et en millimètres
-\item Ajouter une colonne contenant la classe correspondant au jeu de données considéré
-\item Appliquer un premier filtre sur la longueur ou la largeur pour supprimer les points extrêmes isolés
+\item Création de la matrice de classe : formatage des données issues des CSV
+\item Création de la matrice globale en fusionnant les matrices de chaque classe
+\item Instanciation de la classe \texttt{Dectector} \begin{enumerate}
+\item Suppression des redondances
+\item Génération des données malicieuses
+\item Création du jeu d'entraînement et du jeu de test
 \end{enumerate}
-\item Fusionner toutes les matrices précédentes en une seule
-\item Créer un nouvel objet \texttt{Detector} avec cette matrice en attribut
 \end{enumerate}
-
 \end{frame}
 
-\begin{frame}{Chargement des bases de données (2/2)}
-\begin{enumerate}
-\item Supprimer les éventuels redondances
-\item Ajouter une colonne "\texttt{odd}" à la matrice, initialisée à \texttt{False}
-\item \textbf{Générer les données malicieuses}
-\item Ajouter les données malicieuses à la base de données, en rajoutant la colonne "\texttt{odd}" initialisée à \texttt{True}
-\item Remplacer les valeurs des classes (originnellement des chaînes de caractères comme \texttt{"car"} ou \texttt{"human"}) par des entiers
-\item \textbf{Séparer la matrice en un jeu d'entraînement et un jeu de test}
-\item Renvoyer l'objet \texttt{Detector} ainsi initialisé
-\end{enumerate}
+\begin{frame}{Chargement des bases de données}
+\begin{figure}
+\centering
+\includegraphics[width=.56\textwidth]{img/detector_plot.jpg}
+\caption{Base de données après traitement}
+\end{figure}
 \end{frame}
 
 \begin{frame}{Classe \texttt{Detector}}
@@ -167,6 +173,29 @@ malicieux & 5,25 à 6,5 mètres & 1,4 à 1,65 mètres \\
 \multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{c}{$FNR$} & \multicolumn{1}{c}{$TNR$} \\
 \end{tabular}
 
+\medskip
+
+\begin{block}{Exemple pour Random Forest}
+$$\begin{bmatrix}
+2801 & 19 \\ 
+36 & 467 \\
+\end{bmatrix}$$
+\end{block}
+
+\end{frame}
+
+\begin{frame}{Méthodes d'évaluation}
+\framesubtitle{Différentes métriques}
+\begin{itemize}
+\item ratio de vrai positif: $TPR=\frac{TP}{TP+FN}=0.987$
+\item ratio de vrai négatif: $TNR=\frac{TN}{TN+FP} = 0.959$
+\item ratio de faux positif: $FPR=\frac{FP}{TP+TN}=0.04$
+\item ratio de faux négatif: $FNR=\frac{FN}{TP+FN}=0.01 $
+\item valeur prédictive positive: $PPV=\frac{TP}{TP+FP}=0.993$
+\item valeur prédictive négative: $NPV=\frac{TN}{TN+FN}=0.928$
+\item taux de fausses découvertes: $FDR=\frac{FP}{TP+FP}=0.001$
+\item taux de fausses omissions: $FOR=\frac{FN}{TN+FN}=0.072$
+\end{itemize}
 \end{frame}
 
 \begin{frame}{Méthodes d'évaluation}
@@ -194,15 +223,12 @@ Maximisation du score F1 comme critère de performance
 
 \begin{frame}{Recherche exhaustive et validation croisée}
 \begin{itemize}
-\item Tests des jeux de paramètres optimaux via la fonction de scikit-learn \texttt{GridSearchCV}
-\item Utilise la validation croisée
-\item Utilisation d'une fonction de score personnalisée \begin{enumerate}
-\item Classification des éléments du jeu de test
-\item Calcul de la matrice de confusion
-\item Sauvegarde des paramètres et du score
-\item Retour du \emph{f1-score}
-\end{enumerate}
-\item Export des données en formats exploitables (JSON, CSV)
+\item Recherche des paramètres optimaux : \texttt{GridSearchCV}
+\item Utilisation d'une fonction de score (F1-score) personnalisée
+\item Export des données en formats exploitables (JSON, CSV) \begin{itemize}
+\item Table des jeux de paramètres
+\item Table des scores
+\end{itemize}
 \end{itemize}
 \end{frame}
 
@@ -226,6 +252,7 @@ paramètre & rôle & valeur optimale \\
 \texttt{solver} & descente du gradient & \texttt{'lbfgs'}\\
 \texttt{hidden\_layer\_sizes} & couches cachées & \texttt{[28, 28, 28]}\\
 \end{tabular}
+\caption{Paramètres optimaux pour MLP}
 \end{table}
 
 \end{frame}
@@ -233,14 +260,16 @@ paramètre & rôle & valeur optimale \\
 \begin{frame}
 \begin{figure}
 \centering
-\includegraphics[width=.7\textwidth]{img/mlp_activation.png}
+\includegraphics[width=.56\textwidth]{img/mlp_activation_crop.png}
+\caption{Évolution du score du MLP selon la fonction d'activation}
 \end{figure}
 \end{frame}
 
 \begin{frame}
 \begin{figure}
 \centering
-\includegraphics[width=.7\textwidth]{img/mlp_solver.png}
+\includegraphics[width=.56\textwidth]{img/mlp_solver_crop.png}
+\caption{Évolution du score du MLP selon l'algorithme de descente du gradient}
 \end{figure}
 \end{frame}
 
@@ -249,7 +278,7 @@ paramètre & rôle & valeur optimale \\
 
 \begin{itemize}
 \item Tests relativement rapides
-\item Scores rapidement bons
+\item Scores rapidement bons (Score F1 moyen maximal de 0.947)
 \item Beaucoup moins de fluctuations
 \end{itemize}
 
@@ -262,6 +291,7 @@ paramètre & valeur optimale \\
 \texttt{learning\_rate} & 0.3 \\
 \texttt{base\_estimator} & Arbre de décision de profondeur maximale 3\\
 \end{tabular}
+\caption{Paramètres optimaux pour AdaBoost}
 \end{table}
 
 \end{frame}
@@ -269,13 +299,38 @@ paramètre & valeur optimale \\
 \begin{frame}
 \begin{figure}
 \centering
-\includegraphics[width=.7\textwidth]{img/adaboost_depth.png}
+\includegraphics[width=.56\textwidth]{img/adaboost_depth.png}
+\caption{Évolution du score de AdaBoost selon la profondeur maximale des DecisionTrees}
 \end{figure}
+\end{frame}
+
+
+\begin{frame}{Problème multi-classe dans SVM}
+
+Comparaison de deux méthodes d'adaptation au multiclasse :
+
+\begin{itemize}
+\item "One-Versus-the-Rest"
+\item Méthode directe de Crammer et Singer
+\end{itemize}
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.4]{img/svm.png} \hspace{2pt}
+\includegraphics[scale=0.4]{img/svm_OneVsAll.png}
+\caption{Problème multi-classe et séparation "One-Versus-the-Rest"\label{fig:one_versus_rest}}
+\end{figure}
+
 \end{frame}
 
 
 \begin{frame}{Paramètres optimaux}
 \framesubtitle{SVM}
+
+\begin{itemize}
+\item Très long temps de calcul
+\item Score F1 moyen maximal de 0.934
+\end{itemize}
 
 \begin{table}
 \centering
@@ -286,20 +341,10 @@ paramètre & valeurs testées & valeurs optimales \\
 \texttt{C} & $\{10^k \>\> | \>\> k \in [\![-2, 3]\!] \}$ & 100 \\
 \texttt{tol} & $\{10^{-k} \>\> | \>\> k \in [\![3, 6]\!] \}$ & 0.00001 \\
 \end{tabular}
-
+\caption{Paramètres testés et paramètres optimaux pour SVM}
 \end{table}
 
-\bigskip
-
-Comparaison de deux méthodes d'adaptation au multiclasse :
-
-\begin{itemize}
-\item "One-Versus-the-Rest"
-\item Méthode directe de Crammer et Singer
-\end{itemize}
-
 \end{frame}
-
 
 \begin{frame}{Performances des classeurs}
 \begin{table}
@@ -311,13 +356,21 @@ AdaBoost & 0.935 & 0.010 & 0.990 & 0.065 & 0.941 & 0.938 \\
 SVM & 0.966 & 1.0 & 0.0 & 0.034 & 0.145 & 0.252 \\
 R. Forest & 0.917 & 0.007 & 0.993 & 0.083 & 0.960 & 0.938 \\
 \end{tabular}
+\caption{Détails des scores en fonction des classeurs après paramétrage}
 \end{table}
+
+\begin{itemize}
+\item AdaBoost et Random Forest se démarquent
+\item SVM reste très décevant
+\end{itemize}
+
 \end{frame}
 
 \begin{frame}{Régions de décision}
 \begin{figure}
 \centering
-\includegraphics[width=.65\textwidth]{img/adaboost_contour.png}
+\includegraphics[width=.58\textwidth]{img/adaboost_contour.png}
+\caption{Régions de décisions pour le classeur AdaBoost}
 \end{figure}
 \end{frame}
 
