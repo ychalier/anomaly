@@ -1,4 +1,4 @@
-\documentclass{beamer}
+\documentclass[usenames,dvipsnames]{beamer}
 
 \usepackage[utf8]{inputenc}
 \usepackage[francais]{babel}
@@ -102,24 +102,6 @@ malicieux & 5,25 à 6,5 mètres & 1,4 à 1,65 mètres \\
 \end{figure}
 \end{frame}
 
-\begin{frame}{Méthodes d'évaluation}
-\framesubtitle{Matrice de confusion}
-
-\begin{tabular}{ l | l | c | c | c c}
-\multicolumn{2}{c}{} & \multicolumn{2}{c}{Classe réelle} & \\
-\cline{3-4}
-\multicolumn{2}{c|}{} & Positif & Négatif \\
-\cline{2-4}
-\multirow{2}{*}{Classe prédite} & Positif & $TP$ & $FP$ & $PPV$ & $FDR$ \\
-\cline{2-4}
-& Négatif & $FN$ & $TN$ & $FOR$ & $NPV$ \\
-\cline{2-4}
-\multicolumn{1}{r}{} & \multicolumn{1}{l}{} & \multicolumn{1}{c}{$TPR$} & \multicolumn{1}{c}{$FPR$} \\
-\multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{c}{$FNR$} & \multicolumn{1}{c}{$TNR$} \\
-\end{tabular}
-
-\end{frame}
-
 \begin{frame}{Chargement des bases de données (1/2)}
 
 \begin{enumerate}
@@ -170,6 +152,24 @@ malicieux & 5,25 à 6,5 mètres & 1,4 à 1,65 mètres \\
 \end{frame}
 
 \begin{frame}{Méthodes d'évaluation}
+\framesubtitle{Matrice de confusion}
+
+\begin{tabular}{ l | l | c | c | c c}
+\multicolumn{2}{c}{} & \multicolumn{2}{c}{Classe réelle} & \\
+\cline{3-4}
+\multicolumn{2}{c|}{} & Positif & Négatif \\
+\cline{2-4}
+\multirow{2}{*}{Classe prédite} & Positif & $TP$ & $FP$ & $PPV$ & $FDR$ \\
+\cline{2-4}
+& Négatif & $FN$ & $TN$ & $FOR$ & $NPV$ \\
+\cline{2-4}
+\multicolumn{1}{r}{} & \multicolumn{1}{l}{} & \multicolumn{1}{c}{$TPR$} & \multicolumn{1}{c}{$FPR$} \\
+\multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{c}{$FNR$} & \multicolumn{1}{c}{$TNR$} \\
+\end{tabular}
+
+\end{frame}
+
+\begin{frame}{Méthodes d'évaluation}
 \framesubtitle{Score F1}
 
 \begin{block}{Objectif}
@@ -209,30 +209,22 @@ Maximisation du score F1 comme critère de performance
 \begin{frame}{Paramètres optimaux}
 \framesubtitle{Perceptron à couches multiples}
 
-\begin{table}
-\tiny
-\centering
-\begin{tabular}{l l}
-paramètre & ensemble des valeurs testées \\
-\hline
-\texttt{learning\_rate} & \texttt{'constant'}, \texttt{'invscaling'} et \texttt{'adaptive'}\\
-\texttt{alpha} & $\{10^{-k} \>\> | \>\> k \in [\![4, 7]\!] \}$ \\
-\texttt{activation} & \texttt{'identity'}, \texttt{'logistic'}, \texttt{'tanh'} et \texttt{'relu'}\\
-\texttt{solver} &\texttt{'lbfgs'}, \texttt{'sgd'} et \texttt{'adam'} \\
-\texttt{hidden\_layer\_sizes} & 0 à 5 \emph{layers}, de taille variant de 1 à 49 \\
-\end{tabular}
-\end{table}
+\begin{itemize}
+\item Beaucoup de paramètres à tester (plus de 18 heures de test sur les serveurs InfRes)
+\item Score F1 moyen maximal de 0.937
+\item Beaucoup de fluctuations
+\end{itemize}
 
 \begin{table}
 \centering
-\begin{tabular}{l l}
-paramètre & valeur optimale \\
+\begin{tabular}{l l l}
+paramètre & rôle & valeur optimale \\
 \hline
-\texttt{learning\_rate} & \texttt{'constant'}\\
-\texttt{alpha} & $10^{-6}$ \\
-\texttt{activation} & \texttt{'tanh'}\\
-\texttt{solver} & \texttt{'lbfgs'}\\
-\texttt{hidden\_layer\_sizes} & \texttt{[28, 28, 28]}\\
+\texttt{learning\_rate} & taux d'apprentissage & \texttt{'constant'}\\
+\texttt{alpha} & régularisation $l_2$ & $10^{-6}$ \\
+\texttt{activation} & fonction d'activation & \texttt{'tanh'}\\
+\texttt{solver} & descente du gradient & \texttt{'lbfgs'}\\
+\texttt{hidden\_layer\_sizes} & couches cachées & \texttt{[28, 28, 28]}\\
 \end{tabular}
 \end{table}
 
@@ -245,19 +237,21 @@ paramètre & valeur optimale \\
 \end{figure}
 \end{frame}
 
+\begin{frame}
+\begin{figure}
+\centering
+\includegraphics[width=.7\textwidth]{img/mlp_solver.png}
+\end{figure}
+\end{frame}
+
 \begin{frame}{Paramètres optimaux}
 \framesubtitle{AdaBoost}
-\begin{table}
-\tiny
-\centering
-\begin{tabular}{l l}
-paramètre & ensemble des valeurs testées \\
-\hline
-\texttt{n\_estimators} & $[\![1, 99]\!]$ \\
-\texttt{learning\_rate} & $\{k/10 \>\> | \>\> k \in [\![1, 9]\!] \}$ \\
-\texttt{base\_estimator} & Arbres de décision de profondeur maximale dans $[\![2, 9]\!]$ \\
-\end{tabular}
-\end{table}
+
+\begin{itemize}
+\item Tests relativement rapides
+\item Scores rapidement bons
+\item Beaucoup moins de fluctuations
+\end{itemize}
 
 \begin{table}
 \centering
@@ -266,7 +260,7 @@ paramètre & valeur optimale \\
 \hline
 \texttt{n\_estimators} & 46\\
 \texttt{learning\_rate} & 0.3 \\
-\texttt{base\_estimator} & \texttt{max\_depth=}3\\
+\texttt{base\_estimator} & Arbre de décision de profondeur maximale 3\\
 \end{tabular}
 \end{table}
 
@@ -278,6 +272,34 @@ paramètre & valeur optimale \\
 \includegraphics[width=.7\textwidth]{img/adaboost_depth.png}
 \end{figure}
 \end{frame}
+
+
+\begin{frame}{Paramètres optimaux}
+\framesubtitle{SVM}
+
+\begin{table}
+\centering
+\begin{tabular}{lll}
+paramètre & valeurs testées & valeurs optimales \\
+\hline
+\texttt{multi\_class} & \texttt{ovr}, \texttt{crammer\_singer} & \texttt{crammer\_singer} \\
+\texttt{C} & $\{10^k \>\> | \>\> k \in [\![-2, 3]\!] \}$ & 100 \\
+\texttt{tol} & $\{10^{-k} \>\> | \>\> k \in [\![3, 6]\!] \}$ & 0.00001 \\
+\end{tabular}
+
+\end{table}
+
+\bigskip
+
+Comparaison de deux méthodes d'adaptation au multiclasse :
+
+\begin{itemize}
+\item "One-Versus-the-Rest"
+\item Méthode directe de Crammer et Singer
+\end{itemize}
+
+\end{frame}
+
 
 \begin{frame}{Performances des classeurs}
 \begin{table}
@@ -308,5 +330,38 @@ R. Forest & 0.917 & 0.007 & 0.993 & 0.083 & 0.960 & 0.938 \\
 \end{enumerate}
 \end{frame}
 
+\section{Conclusion}
+\begin{frame}{Conclusion}
+
+Dans ce travail, nous avons:
+\begin{itemize}
+
+\item implémenté un algorithme de classification d’obstacles,
+
+\item mené une étude de comparative de performances selon le score F1
+
+\end{itemize} 
+
+\medskip
+\begin{block}{Résultats}
+Les algorithmes de Random Forest et AdaBoost atteignent des score F1 supérieurs à 0.93
+\end{block}
+
+
+\begin{block}{Travaux futurs}
+Orienter les recherches sur la sécurité du dispositif
+\end{block}
+
+
+\end{frame}
+
+\begin{frame}
+\begin{center}
+
+\begin{Huge}
+\color{Blue}Merci pour votre attention.
+\end{Huge}
+\end{center}
+\end{frame}
 
 \end{document}
